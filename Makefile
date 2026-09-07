@@ -14,5 +14,5 @@ itch-login:
 		butler login
 
 itch-upload: itch-build-zip
-		butler push builds/client-html.zip muchachoo/tomatoe-mmo:client-html
+		butler push builds/client-html.zip muchachoo/three-duels:client-html
 
