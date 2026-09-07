@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CharacterModelDefinition" format=3 uid="uid://dml2g618mtteu"]
+
+[ext_resource type="Script" uid="uid://bkeprxke62m0" path="res://resources/character_model/character_model_definition.gd" id="1_1bb6a"]
+[ext_resource type="PackedScene" uid="uid://bxprloggi28s1" path="res://resources/character_model/erika_archer.tscn" id="1_s5vy0"]
+
+[resource]
+script = ExtResource("1_1bb6a")
+display_name = "Erika"
+model_scene = ExtResource("1_s5vy0")
+metadata/_custom_type_script = "uid://bkeprxke62m0"

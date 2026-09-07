@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://hgntuhjwdoi"]
+
+[ext_resource type="PackedScene" uid="uid://c5y0kamtehmai" path="res://assets/my_3d_models/shield_wood_poor_1.glb" id="1_0wnuf"]
+
+[node name="Shield_2" type="Node3D" unique_id=1467764511]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
+
+[node name="shield_wood_poor_1" parent="." unique_id=2058145169 instance=ExtResource("1_0wnuf")]
+transform = Transform3D(6.556708e-08, -5.7320558e-15, 1.5, -1.3113416e-07, -1.4999999, 0, 1.4999999, -1.3113416e-07, -6.556708e-08, 0.0049008727, 0, 0)

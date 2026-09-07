@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://cyeephc4su452"]
+
+[ext_resource type="PackedScene" uid="uid://dfloh2wq3exes" path="res://assets/my_3d_models/shield_guardian_ai_1.glb" id="1_fr077"]
+
+[node name="Shield_2" type="Node3D" unique_id=1467764511]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
+
+[node name="shield_guardian_ai_1" parent="." unique_id=808206759 instance=ExtResource("1_fr077")]
+transform = Transform3D(2.6226834e-08, -2.2928227e-15, 0.6, -5.2453668e-08, -0.6, 0, 0.6, -5.2453668e-08, -2.6226834e-08, 0, 0, 0)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CharacterPropDefinition" format=3 uid="uid://duslab8fwq8l"]
+
+[ext_resource type="PackedScene" uid="uid://cfabq858ojcdx" path="res://resources/character_prop/shield_2_poor_wooden_2.tscn" id="1_meqil"]
+[ext_resource type="Script" uid="uid://twfa88qvqiwf" path="res://resources/character_prop/character_prop_definition.gd" id="2_iug2t"]
+
+[resource]
+script = ExtResource("2_iug2t")
+slot = "left_hand"
+display_name = "Shield_2_2"
+prop_scene = ExtResource("1_meqil")
+target_bone_name = "mixamorig_LeftHand"
+local_position = Vector3(0, 0, -0.05)
+local_rotation_degrees = Vector3(90, 0, -90)
+metadata/_custom_type_script = "uid://twfa88qvqiwf"

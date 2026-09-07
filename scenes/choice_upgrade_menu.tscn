@@ -1,0 +1,263 @@
+[gd_scene format=3 uid="uid://btl8lxwg2kfkj"]
+
+[ext_resource type="Theme" uid="uid://c6vho6rwvu82i" path="res://assets/theme_and_fonts/my_theme.tres" id="1_jygd3"]
+[ext_resource type="Texture2D" uid="uid://b05vv7yuo26hy" path="res://assets/icons/1_bit_pack.png" id="2_mvyxn"]
+[ext_resource type="Texture2D" uid="uid://diukg03da6p0k" path="res://assets/icons/icon_items.png" id="4_gdt0p"]
+[ext_resource type="Script" path="res://scenes/choice_upgrade_menu.gd" id="5_choice_menu"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mvyxn"]
+atlas = ExtResource("2_mvyxn")
+region = Rect2(417, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gdt0p"]
+atlas = ExtResource("4_gdt0p")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kcy42"]
+atlas = ExtResource("4_gdt0p")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d73ua"]
+atlas = ExtResource("4_gdt0p")
+region = Rect2(384, 0, 128, 128)
+
+[node name="ChoiceUpgradeMenu" type="Control" unique_id=1549765750]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_choice_menu")
+
+[node name="Main_Label_Control" type="Control" parent="." unique_id=1197709185]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+
+[node name="Main_Label" type="Label" parent="Main_Label_Control" unique_id=917477714]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -165.5
+offset_right = 165.5
+offset_bottom = 40.0
+grow_horizontal = 2
+theme = ExtResource("1_jygd3")
+text = "Choose an Upgrade"
+
+[node name="Three_Column_Control" type="Control" parent="." unique_id=321333040]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Three_Column_Control" unique_id=463294409]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button1" type="Button" parent="Three_Column_Control/HBoxContainer" unique_id=1144137605]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_jygd3")
+text = "Name Upgrade 1
+
+Description: My_description LONGER DESCRIPTION ON THIS PARTICULAR BUTTON"
+icon = SubResource("AtlasTexture_mvyxn")
+autowrap_mode = 2
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+
+[node name="Button2" type="Button" parent="Three_Column_Control/HBoxContainer" unique_id=1395114235]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_jygd3")
+text = "Name Upgrade 1
+Description: My_description"
+icon = SubResource("AtlasTexture_mvyxn")
+autowrap_mode = 2
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+
+[node name="Button3" type="Button" parent="Three_Column_Control/HBoxContainer" unique_id=665888499]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_jygd3")
+text = "Name Upgrade 1
+
+Description: My_description"
+icon = SubResource("AtlasTexture_mvyxn")
+autowrap_mode = 2
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=690779960]
+visible = false
+z_index = -10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.9882353, 0.8980392, 0.67058825, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=939425184]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 100
+theme_override_constants/margin_top = 100
+theme_override_constants/margin_right = 100
+theme_override_constants/margin_bottom = 100
+metadata/_edit_use_anchors_ = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1689783379]
+layout_mode = 2
+
+[node name="Card1" type="Button" parent="MarginContainer/HBoxContainer" unique_id=1561499163]
+custom_minimum_size = Vector2(0, 512)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_jygd3")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Card1" unique_id=1898750716]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Card1/MarginContainer" unique_id=650747472]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=1413393411]
+custom_minimum_size = Vector2(64, 128)
+layout_mode = 2
+texture = SubResource("AtlasTexture_gdt0p")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=1997404966]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Toto au au skiuy gugugwuygrwuegr uwgeuyrgwueygr
+qwe
+qw
+e
+qwe
+qw
+eeee
+qwe"
+autowrap_mode = 2
+
+[node name="Card2" type="Button" parent="MarginContainer/HBoxContainer" unique_id=2086732520]
+custom_minimum_size = Vector2(0, 512)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_jygd3")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Card2" unique_id=246242139]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Card2/MarginContainer" unique_id=276778542]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=1674522631]
+custom_minimum_size = Vector2(64, 128)
+layout_mode = 2
+texture = SubResource("AtlasTexture_kcy42")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=2026574797]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Toto au au ski
+qwe
+qw
+e
+qwe
+qw
+eeee
+qwe"
+autowrap_mode = 2
+
+[node name="Card3" type="Button" parent="MarginContainer/HBoxContainer" unique_id=787219131]
+custom_minimum_size = Vector2(0, 512)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_jygd3")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Card3" unique_id=1828532680]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Card3/MarginContainer" unique_id=719058935]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=1473624123]
+custom_minimum_size = Vector2(64, 128)
+layout_mode = 2
+texture = SubResource("AtlasTexture_d73ua")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=1821665101]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Toto au au ski
+qe
+qw
+eq
+we
+qwe
+q
+we
+"
+autowrap_mode = 2

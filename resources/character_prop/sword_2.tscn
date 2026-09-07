@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://c7r5fk30aex84"]
+
+[ext_resource type="PackedScene" uid="uid://c3fvt4lwnk0ru" path="res://assets/my_3d_models/first_sword.glb" id="1_ieobe"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ieobe"]
+size = Vector3(0.36427307, 1.2774811, 0.22894287)
+
+[node name="Weapon" type="Node3D" unique_id=1467764511]
+
+[node name="first_sword" parent="." unique_id=737440864 instance=ExtResource("1_ieobe")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0.44280028, 0)
+
+[node name="WeaponHitbox" type="Area3D" parent="." unique_id=1908953054]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponHitbox" unique_id=772976949]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0076675415, 0.50211334, -0.0061950684)
+shape = SubResource("BoxShape3D_ieobe")
+debug_color = Color(0.9570816, 1.0588765e-06, 0.5370912, 0.41960785)

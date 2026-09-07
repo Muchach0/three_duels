@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CharacterPropDefinition" format=3 uid="uid://bxtsms3i2fmuj"]
+
+[ext_resource type="Script" uid="uid://twfa88qvqiwf" path="res://resources/character_prop/character_prop_definition.gd" id="1_xwogr"]
+[ext_resource type="PackedScene" uid="uid://ofo42lwktlyv" path="res://resources/character_prop/Left_Shoulder.tscn" id="1_y6e4o"]
+
+[resource]
+script = ExtResource("1_xwogr")
+slot = "left_shoulder"
+display_name = "Left Shoulder"
+prop_scene = ExtResource("1_y6e4o")
+target_bone_name = "mixamorig_LeftShoulder"
+metadata/_custom_type_script = "uid://twfa88qvqiwf"

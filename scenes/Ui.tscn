@@ -1,0 +1,180 @@
+[gd_scene format=3 uid="uid://dndf3hc6kgtjg"]
+
+[ext_resource type="Script" uid="uid://72ikyy46e3cf" path="res://scenes/ui.gd" id="1_agcvy"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_agcvy"]
+bg_color = Color(1, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g3ve3"]
+bg_color = Color(0.7882353, 0.7882353, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cf3ad"]
+bg_color = Color(1, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rwbfc"]
+bg_color = Color(0.787569, 0.78756875, 0, 1)
+
+[node name="Ui" type="Node" unique_id=546206344]
+script = ExtResource("1_agcvy")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=166737735]
+
+[node name="Control" type="Control" parent="CanvasLayer" unique_id=678303731]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control" unique_id=1077700026]
+layout_mode = 0
+offset_right = 218.0
+offset_bottom = 66.0
+
+[node name="ColorButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=53740718]
+layout_mode = 2
+text = "Color Button"
+
+[node name="ColorButton2" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=1110176639]
+layout_mode = 2
+text = "Model Button"
+
+[node name="LeftHandButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=570454153]
+layout_mode = 2
+text = "Left Hand Button"
+
+[node name="SwordButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=524624823]
+layout_mode = 2
+text = "Sword  Button"
+
+[node name="HelmetButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=1794790288]
+layout_mode = 2
+text = "Helmet  Button"
+
+[node name="LeftShoulderButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=1703838144]
+layout_mode = 2
+text = "Left Shoulder  Button"
+
+[node name="RightShoulderButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=67276435]
+layout_mode = 2
+text = "Right Shoulder  Button"
+
+[node name="ExitButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=2118872863]
+layout_mode = 2
+text = "Exit Button ❌"
+
+[node name="SwordCollisionButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=272921357]
+layout_mode = 2
+text = "Test Sword Collision"
+
+[node name="EnemyIdleButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=1803768348]
+layout_mode = 2
+text = "Override All: Idle"
+
+[node name="EnemyAttackButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=939833140]
+layout_mode = 2
+text = "Override All: Attack"
+
+[node name="EnemyBlockButton" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=1533070283]
+layout_mode = 2
+text = "Override All: Block"
+
+[node name="ClearEnemyOverrideButton" type="Button" parent="CanvasLayer/Control/HBoxContainer"]
+layout_mode = 2
+text = "Clear Enemy Override"
+
+[node name="EnemyControl" type="Control" parent="CanvasLayer" unique_id=272862475]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+
+[node name="HBoxContainer" type="VBoxContainer" parent="CanvasLayer/EnemyControl" unique_id=922760691]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -109.0
+offset_right = 109.0
+offset_bottom = 66.0
+grow_horizontal = 2
+
+[node name="EnemyLabel" type="Label" parent="CanvasLayer/EnemyControl/HBoxContainer" unique_id=1544550746]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Enemy"
+
+[node name="ProfileLabel" type="Label" parent="CanvasLayer/EnemyControl/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Profile: -"
+
+[node name="StateLabel" type="Label" parent="CanvasLayer/EnemyControl/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "State: -"
+
+[node name="EnemyLifeBar" type="ProgressBar" parent="CanvasLayer/EnemyControl/HBoxContainer" unique_id=1413856389]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_agcvy")
+step = 1.0
+value = 75.0
+
+[node name="EnemyGuardBar" type="ProgressBar" parent="CanvasLayer/EnemyControl/HBoxContainer" unique_id=1671301874]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_g3ve3")
+step = 1.0
+value = 75.0
+
+[node name="PlayerControl" type="Control" parent="CanvasLayer" unique_id=1842867384]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 40.0
+grow_vertical = 0
+size_flags_vertical = 0
+
+[node name="HBoxContainer" type="VBoxContainer" parent="CanvasLayer/PlayerControl" unique_id=271016488]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -85.0
+offset_right = 218.0
+grow_vertical = 0
+
+[node name="EnemyLabel" type="Label" parent="CanvasLayer/PlayerControl/HBoxContainer" unique_id=105409911]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Player"
+
+[node name="EnemyLifeBar" type="ProgressBar" parent="CanvasLayer/PlayerControl/HBoxContainer" unique_id=1260761187]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_cf3ad")
+step = 1.0
+value = 75.0
+
+[node name="EnemyGuardBar" type="ProgressBar" parent="CanvasLayer/PlayerControl/HBoxContainer" unique_id=1843381317]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_rwbfc")
+step = 1.0
+value = 75.0
+
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/ColorButton" to="." method="_on_color_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/ColorButton2" to="." method="_on_model_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/LeftHandButton" to="." method="_on_left_hand_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/SwordButton" to="." method="_on_sword_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/HelmetButton" to="." method="_on_helmet_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/LeftShoulderButton" to="." method="_on_left_shoulder_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/RightShoulderButton" to="." method="_on_right_shoulder_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/SwordCollisionButton" to="." method="_on_sword_collision_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/EnemyIdleButton" to="." method="_on_enemy_idle_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/EnemyAttackButton" to="." method="_on_enemy_attack_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/EnemyBlockButton" to="." method="_on_enemy_block_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/HBoxContainer/ClearEnemyOverrideButton" to="." method="_on_clear_enemy_override_button_pressed"]

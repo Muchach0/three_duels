@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CharacterModelDefinition" format=3 uid="uid://l0n43la7l3jj"]
+
+[ext_resource type="PackedScene" uid="uid://qan8cwj5wvn1" path="res://resources/character_model/y_bot.tscn" id="1_qrm3y"]
+[ext_resource type="Script" uid="uid://bkeprxke62m0" path="res://resources/character_model/character_model_definition.gd" id="1_uc6hu"]
+
+[resource]
+script = ExtResource("1_uc6hu")
+display_name = "Blue_Human"
+model_scene = ExtResource("1_qrm3y")
+metadata/_custom_type_script = "uid://bkeprxke62m0"

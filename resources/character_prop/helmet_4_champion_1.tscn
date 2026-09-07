@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://0jjtu047ei58"]
+
+[ext_resource type="PackedScene" uid="uid://de1hcc60wa7wd" path="res://assets/my_3d_models/helmet_2_red_paint.glb" id="1_a1v4u"]
+[ext_resource type="PackedScene" uid="uid://1olbbok66ku7" path="res://assets/my_3d_models/champion_helmet_1.glb" id="2_a221g"]
+
+[node name="Helmet" type="Node3D" unique_id=1375855481]
+
+[node name="helmet_2_red_paint" parent="." unique_id=1466194178 instance=ExtResource("1_a1v4u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.10034242, 0.02516602)
+visible = false
+
+[node name="champion_helmet_1" parent="." unique_id=1650876705 instance=ExtResource("2_a221g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.07159172, 0)

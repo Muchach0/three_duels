@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CharacterPropDefinition" format=3 uid="uid://c1scgs8ihqkwp"]
+
+[ext_resource type="PackedScene" uid="uid://dwralfxau0qpw" path="res://resources/character_prop/sword_5_guardian_1.tscn" id="1_65sj6"]
+[ext_resource type="Script" uid="uid://twfa88qvqiwf" path="res://resources/character_prop/character_prop_definition.gd" id="2_ecshn"]
+
+[resource]
+script = ExtResource("2_ecshn")
+display_name = "Guardian Sword"
+prop_scene = ExtResource("1_65sj6")
+local_rotation_degrees = Vector3(180, 0, -90)
+metadata/_custom_type_script = "uid://twfa88qvqiwf"

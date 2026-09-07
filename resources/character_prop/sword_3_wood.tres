@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CharacterPropDefinition" format=3 uid="uid://ctjosr7nv3oa0"]
+
+[ext_resource type="PackedScene" uid="uid://dxx16lb5mbj6y" path="res://resources/character_prop/sword_3_wood.tscn" id="1_u640x"]
+[ext_resource type="Script" uid="uid://twfa88qvqiwf" path="res://resources/character_prop/character_prop_definition.gd" id="2_mt2rq"]
+
+[resource]
+script = ExtResource("2_mt2rq")
+display_name = "sword_3"
+prop_scene = ExtResource("1_u640x")
+local_rotation_degrees = Vector3(180, 0, -90)
+metadata/_custom_type_script = "uid://twfa88qvqiwf"

@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://kl2yfr0iiogi"]
+
+[ext_resource type="Script" uid="uid://u4lxkqvek35s" path="res://src/game_manager/game_manager.gd" id="1_fgsf7"]
+
+[node name="GameManager" type="Node" unique_id=460646201]
+script = ExtResource("1_fgsf7")
+
+[node name="WorldRoot" type="Node3D" parent="." unique_id=175001]
+process_mode = 3
+
+[node name="UIRoot" type="CanvasLayer" parent="." unique_id=175002]
+layer = 10
+process_mode = 3

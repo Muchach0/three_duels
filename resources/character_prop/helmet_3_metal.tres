@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CharacterPropDefinition" format=3 uid="uid://s2lt8q3wl3qg"]
+
+[ext_resource type="PackedScene" uid="uid://duhy4cscklcga" path="res://resources/character_prop/helmet_3_metal.tscn" id="1_hbhss"]
+[ext_resource type="Script" uid="uid://twfa88qvqiwf" path="res://resources/character_prop/character_prop_definition.gd" id="2_k3cik"]
+
+[resource]
+script = ExtResource("2_k3cik")
+slot = "head"
+display_name = "Helmet_3_Metal"
+prop_scene = ExtResource("1_hbhss")
+target_bone_name = "mixamorig_Head"
+metadata/_custom_type_script = "uid://twfa88qvqiwf"

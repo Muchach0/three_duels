@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CharacterPropDefinition" format=3 uid="uid://cr0jlyo7dyyq2"]
+
+[ext_resource type="PackedScene" uid="uid://0jjtu047ei58" path="res://resources/character_prop/helmet_4_champion_1.tscn" id="1_y4anv"]
+[ext_resource type="Script" uid="uid://twfa88qvqiwf" path="res://resources/character_prop/character_prop_definition.gd" id="2_flwea"]
+
+[resource]
+script = ExtResource("2_flwea")
+slot = "head"
+display_name = "Champion Helmet"
+prop_scene = ExtResource("1_y4anv")
+target_bone_name = "mixamorig_Head"
+metadata/_custom_type_script = "uid://twfa88qvqiwf"

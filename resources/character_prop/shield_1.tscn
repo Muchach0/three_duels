@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bkof8s4j2uhtr"]
+
+[ext_resource type="PackedScene" uid="uid://cl02ornoyk4ms" path="res://assets/my_3d_models/first_shield.glb" id="2_a2d73"]
+
+[node name="Shield_1" type="Node3D" unique_id=1467764511]
+
+[node name="first_shield" parent="." unique_id=1073039448 instance=ExtResource("2_a2d73")]
+transform = Transform3D(-1.0927847e-08, 0.25, 0, -0.25, -1.0927847e-08, 0, 0, 0, 0.25, 0, 0, 0)

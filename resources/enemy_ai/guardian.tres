@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyAiProfile" format=3 uid="uid://mw3f4fnhgntl"]
+
+[ext_resource type="Script" uid="uid://dcq8apd0r3s7l" path="res://resources/enemy_ai/enemy_ai_profile.gd" id="1_uw61w"]
+
+[resource]
+script = ExtResource("1_uw61w")
+profile_name = "Guardian"
+block_chance = 2
+block_duration = 1.0
+heavy_attack_weight = 0.15
+combo_probability = 0.15
+max_combo_length = 2
+metadata/_custom_type_script = "uid://dcq8apd0r3s7l"

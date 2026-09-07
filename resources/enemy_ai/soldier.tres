@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EnemyAiProfile" format=3 uid="uid://d4io6gm1t8l7m"]
+
+[ext_resource type="Script" uid="uid://dcq8apd0r3s7l" path="res://resources/enemy_ai/enemy_ai_profile.gd" id="1_ejxwx"]
+
+[resource]
+script = ExtResource("1_ejxwx")
+profile_name = "Soldier"
+openings = 2
+metadata/_custom_type_script = "uid://dcq8apd0r3s7l"

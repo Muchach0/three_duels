@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CharacterPropDefinition" format=3 uid="uid://c8e4tojjy74jo"]
+
+[ext_resource type="PackedScene" uid="uid://8wtmqlhuugyn" path="res://resources/character_prop/sword_6_champion_1.tscn" id="1_1amkm"]
+[ext_resource type="Script" uid="uid://twfa88qvqiwf" path="res://resources/character_prop/character_prop_definition.gd" id="2_b4u5j"]
+
+[resource]
+script = ExtResource("2_b4u5j")
+display_name = "Champion Sword"
+prop_scene = ExtResource("1_1amkm")
+local_rotation_degrees = Vector3(180, 0, -90)
+metadata/_custom_type_script = "uid://twfa88qvqiwf"

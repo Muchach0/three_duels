@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://mu7dlftiyfev"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_4jm8v"]
+
+[node name="Helmet" type="Node3D" unique_id=1375855481]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=12569002]
+transform = Transform3D(0.13520434, 0, 0, 0, 0.34937602, 0, 0, 0, 0.30032587, -0.1811282, 0, 0)
+mesh = SubResource("BoxMesh_4jm8v")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1668604262]
+transform = Transform3D(0.13520434, 0, 0, 0, 0.34937602, 0, 0, 0, 0.30032587, 0.20143902, 0, 0)
+mesh = SubResource("BoxMesh_4jm8v")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=932250957]
+transform = Transform3D(-5.9099694e-09, 0, -0.30032587, 0, 0.349376, 0, 0.13520434, 0, -1.3127661e-08, 0.011087924, 0, -0.08479327)
+mesh = SubResource("BoxMesh_4jm8v")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=572235269]
+transform = Transform3D(2.5833295e-16, -1.2300806e-08, -0.30032584, -0.13520433, -1.2300806e-08, 0, -5.909969e-09, 0.28140962, -1.312766e-08, 0.011087924, 0.24062732, -0.009040177)
+mesh = SubResource("BoxMesh_4jm8v")

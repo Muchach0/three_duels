@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CharacterModelDefinition" format=3 uid="uid://b44yuw3tbwpbe"]
+
+[ext_resource type="PackedScene" uid="uid://c006meeoxe0o5" path="res://resources/character_model/maria_j_j_ong.tscn" id="1_4k3gr"]
+[ext_resource type="Script" uid="uid://bkeprxke62m0" path="res://resources/character_model/character_model_definition.gd" id="1_b7r45"]
+
+[resource]
+script = ExtResource("1_b7r45")
+display_name = "Maria"
+model_scene = ExtResource("1_4k3gr")
+metadata/_custom_type_script = "uid://bkeprxke62m0"

@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cwsa61rgf2vjs"]
+
+[ext_resource type="PackedScene" uid="uid://de1hcc60wa7wd" path="res://assets/my_3d_models/helmet_2_red_paint.glb" id="5_mc14j"]
+
+[node name="Helmet" type="Node3D" unique_id=1375855481]
+
+[node name="helmet_2_red_paint" parent="." unique_id=1466194178 instance=ExtResource("5_mc14j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.10034242, 0.02516602)

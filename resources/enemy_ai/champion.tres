@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyAiProfile" format=3 uid="uid://c0248dmjjmlcd"]
+
+[ext_resource type="Script" uid="uid://dcq8apd0r3s7l" path="res://resources/enemy_ai/enemy_ai_profile.gd" id="1_qsyuv"]
+
+[resource]
+script = ExtResource("1_qsyuv")
+profile_name = "Champion"
+attack_speed = 2
+aggression = 2
+block_chance = 2
+openings = 0
+light_attack_weight = 0.65
+heavy_attack_weight = 0.35
+combo_probability = 0.70
+max_combo_length = 3
+approach_running = true
+metadata/_custom_type_script = "uid://dcq8apd0r3s7l"

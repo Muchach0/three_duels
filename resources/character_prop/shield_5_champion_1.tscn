@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://jaa8hwqnm8ma"]
+
+[ext_resource type="PackedScene" uid="uid://dfloh2wq3exes" path="res://assets/my_3d_models/shield_guardian_ai_1.glb" id="1_qman8"]
+[ext_resource type="PackedScene" uid="uid://cqcgfyd7wnrca" path="res://assets/my_3d_models/champion_shield_ai_1.glb" id="2_4whcn"]
+
+[node name="Shield_2" type="Node3D" unique_id=1467764511]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
+
+[node name="shield_guardian_ai_1" parent="." unique_id=808206759 instance=ExtResource("1_qman8")]
+transform = Transform3D(2.6226834e-08, -2.2928227e-15, 0.6, -5.2453668e-08, -0.6, 0, 0.6, -5.2453668e-08, -2.6226834e-08, 0, 0, 0)
+visible = false
+
+[node name="champion_shield_ai_1" parent="." unique_id=1512425061 instance=ExtResource("2_4whcn")]
+transform = Transform3D(3.934025e-08, -3.4392337e-15, 0.9, -7.86805e-08, -0.9, 0, 0.9, -7.86805e-08, -3.934025e-08, 0, 0, 0)

@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://b7fa64tx1hcnn"]
+
+[ext_resource type="PackedScene" uid="uid://qcwgo0q4wl7o" path="res://character/character_2.tscn" id="1_h8avn"]
+[ext_resource type="PackedScene" uid="uid://dndf3hc6kgtjg" path="res://scenes/Ui.tscn" id="2_vqwjj"]
+[ext_resource type="Resource" uid="uid://d4io6gm1t8l7m" path="res://resources/enemy_ai/soldier.tres" id="3_503t6"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_7an68"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(7.015357, 0.1, 8.221632)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7an68"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7an68"]
+
+[node name="Empty" type="Node3D" unique_id=827904485]
+
+[node name="plane" type="StaticBody3D" parent="." unique_id=1746676193]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="plane" unique_id=1452618086]
+transform = Transform3D(3.5076785, 0, 0, 0, 1, 0, 0, 0, 4.110816, 0, 0, -0.0018467903)
+mesh = SubResource("PlaneMesh_7an68")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="plane" unique_id=807397303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.0018467903)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="cube" type="StaticBody3D" parent="." unique_id=718835856]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="cube" unique_id=410585674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.50461566, 1.5031371)
+mesh = SubResource("BoxMesh_7an68")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="cube" unique_id=1326217106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8228999, 1.5011075)
+shape = SubResource("BoxShape3D_7an68")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=670545764]
+transform = Transform3D(1, 0, 0, 0, -0.8122057, 0.58337116, 0, -0.58337116, -0.8122057, 0, 4.056411, -3.9925146)
+shadow_enabled = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=702341303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5735378, 1.0069978, -0.76603365)
+light_energy = 7.21
+shadow_enabled = true
+
+[node name="Medium Run" parent="." unique_id=1300793572 instance=ExtResource("1_h8avn")]
+
+[node name="Ui" parent="." unique_id=546206344 instance=ExtResource("2_vqwjj")]
+
+[node name="Soldier" parent="." unique_id=1224360906 instance=ExtResource("1_h8avn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
+character_mode = 1
+enemy_ai_profile = ExtResource("3_503t6")
+enemy_model_index = 1
+enemy_tint_index = 3
+enemy_prop_slots = Array[String](["right_hand", "left_hand", "head"])

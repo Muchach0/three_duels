@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CharacterModelDefinition" format=3 uid="uid://cwuosf6jlbife"]
+
+[ext_resource type="Script" uid="uid://bkeprxke62m0" path="res://resources/character_model/character_model_definition.gd" id="1_0bknb"]
+[ext_resource type="PackedScene" uid="uid://dkdopxm6511g2" path="res://resources/character_model/red_human_female.tscn" id="1_wjek2"]
+
+[resource]
+script = ExtResource("1_0bknb")
+display_name = "Red Human Female"
+model_scene = ExtResource("1_wjek2")
+metadata/_custom_type_script = "uid://bkeprxke62m0"

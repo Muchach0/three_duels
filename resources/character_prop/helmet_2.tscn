@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://bcigq4balc3ac"]
+
+[ext_resource type="PackedScene" uid="uid://b1ac65kbqsx54" path="res://assets/my_3d_models/helmet_1.glb" id="1_g4lru"]
+[ext_resource type="PackedScene" uid="uid://cvriw1h8o4mgu" path="res://assets/my_3d_models/helmet_1_2.glb" id="2_dig08"]
+[ext_resource type="PackedScene" uid="uid://crwie5nlkd4y3" path="res://assets/my_3d_models/helmet_1_3.glb" id="3_fmcun"]
+[ext_resource type="PackedScene" uid="uid://cf5dhg8emqrf" path="res://assets/my_3d_models/helmet_1_4.glb" id="4_lk0fp"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_4jm8v"]
+
+[node name="Helmet" type="Node3D" unique_id=1375855481]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=12569002]
+transform = Transform3D(0.13520434, 0, 0, 0, 0.34937602, 0, 0, 0, 0.30032587, -0.1811282, 0, 0)
+visible = false
+mesh = SubResource("BoxMesh_4jm8v")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1668604262]
+transform = Transform3D(0.13520434, 0, 0, 0, 0.34937602, 0, 0, 0, 0.30032587, 0.20143902, 0, 0)
+visible = false
+mesh = SubResource("BoxMesh_4jm8v")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=932250957]
+transform = Transform3D(-5.9099694e-09, 0, -0.30032587, 0, 0.349376, 0, 0.13520434, 0, -1.3127661e-08, 0.011087924, 0, -0.08479327)
+visible = false
+mesh = SubResource("BoxMesh_4jm8v")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=572235269]
+transform = Transform3D(2.5833295e-16, -1.2300806e-08, -0.30032584, -0.13520433, -1.2300806e-08, 0, -5.909969e-09, 0.28140962, -1.312766e-08, 0.011087924, 0.24062732, -0.009040177)
+visible = false
+mesh = SubResource("BoxMesh_4jm8v")
+
+[node name="helmet_1" parent="." unique_id=998050510 instance=ExtResource("1_g4lru")]
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -0.3390507, 0.119, 0.025)
+visible = false
+
+[node name="helmet_1_2" parent="." unique_id=1212234323 instance=ExtResource("2_dig08")]
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, 0, 0.119, 0.025)
+visible = false
+
+[node name="helmet_1_3" parent="." unique_id=1514195596 instance=ExtResource("3_fmcun")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.262743, 0.1101964, 0)
+visible = false
+
+[node name="helmet_1_4" parent="." unique_id=414532655 instance=ExtResource("3_fmcun")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.07337429)
+visible = false
+
+[node name="helmet_1_5" parent="." unique_id=2071926732 instance=ExtResource("4_lk0fp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.014853209, 0.11164036, -0.13822344)

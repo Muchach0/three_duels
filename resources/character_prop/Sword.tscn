@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://nkhgts4gvsl3"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_48qxn"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_em3nw"]
+
+[node name="Sword" type="Node3D" unique_id=1467764511]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1888572168]
+transform = Transform3D(0.14939432, 0, 0, 0, 0.15655075, 0, 0, 0, 0.1704905, 0, 0, 0)
+mesh = SubResource("CylinderMesh_48qxn")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1821320629]
+transform = Transform3D(0.19667597, 0, 0, 0, 1.5755987, 0, 0, 0, 0.026453696, 0.027185112, 0.8907259, 0)
+mesh = SubResource("BoxMesh_em3nw")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=1460957612]
+transform = Transform3D(-2.2912117e-09, -0.28166404, 0, 0.052416813, -1.2311927e-08, 0, 0, 0, 0.026453696, -0.06668663, 1.6516536, 0)
+mesh = SubResource("BoxMesh_em3nw")
