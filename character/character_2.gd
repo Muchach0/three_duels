@@ -29,6 +29,11 @@ enum CharacterMode {
 @export var character_model_yaw_offset := PI
 @export var heavy_attack_hold_time := 0.45
 
+@export_group("Dodge")
+@export_range(0.1, 10.0, 0.05) var dodge_distance := 2.5
+@export_range(0.1, 3.0, 0.05) var dodge_duration := 0.7
+@export_range(0.0, 1.0, 0.05) var dodge_opacity := 0.65
+
 @export_group("Customization")
 @export var available_model_definitions: Array[CharacterModelDefinition] = []
 @export var available_tint_presets: Array[Color] = [
@@ -61,6 +66,14 @@ const TREE_NODE_ATTACK_SELECTOR := "AttackSelector"
 const TREE_NODE_BLOCK_IMPACT_ONE_SHOT := "BlockImpactOneShot"
 const TREE_NODE_HIT_REACT_ONE_SHOT := "HitReactOneShot"
 const TREE_NODE_DEATH_ONE_SHOT := "DeathOneShot"
+const TREE_NODE_DODGE_SELECTOR := "DodgeSelector"
+const TREE_NODE_DODGE_TIME_SCALE := "DodgeTimeScale"
+const TREE_NODE_DODGE_ONE_SHOT := "DodgeOneShot"
+const DODGE_NAMES := ["Forward", "Backward", "Left", "Right"]
+const DODGE_VECTORS := [Vector3.FORWARD, Vector3.BACK, Vector3.LEFT, Vector3.RIGHT]
+const DODGE_ACTIONS := ["move_forward", "move_back", "move_left", "move_right"]
+const DODGE_SHADER := preload("res://assets/shaders/dodge_transparency.gdshader")
+const DodgeVisual := preload("res://character/dodge_visual.gd")
 const RIGHT_HAND_SLOT := "right_hand"
 const ATTACK_SELECTOR_LIGHT := "Light"
 const ATTACK_SELECTOR_HEAVY := "Heavy"
@@ -123,7 +136,7 @@ const REQUIRED_ANIMATION_BONES: Array[String] = [
     "mixamorig_RightToeBase",
 ]
 
-@onready var animation_tree: AnimationTree = $AnimationTree
+@onready var animation_tree: AnimationTree = get_node_or_null("AnimationTree") as AnimationTree
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var camera: Camera3D = $Camera3D
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
@@ -157,9 +170,23 @@ var _active_prop_nodes: Dictionary = {}
 var _bone_attachments: Dictionary = {}
 var _ai_movement_direction := Vector3.ZERO
 var _ai_running := false
+var _dodge_one_shot: AnimationNodeOneShot
+var _dodge_clip_lengths: Array[float] = []
+var _dodge_direction := Vector3.ZERO
+var _dodge_elapsed := 0.0
+var _dodge_motion_duration := 0.0
+var _dodge_motion_distance := 0.0
+var _movement_press_sequence := 0
+var _movement_press_order: Dictionary = {}
+var _dodge_visual := DodgeVisual.new()
 
 
 func _ready() -> void:
+    if not _make_animation_tree_instance_local():
+        process_mode = Node.PROCESS_MODE_DISABLED
+        return
+
+    _dodge_visual.setup(self, DODGE_SHADER, dodge_opacity)
     _active_skeleton = get_node_or_null("Skeleton3D") as Skeleton3D
     _facing_yaw = rotation.y - character_model_yaw_offset
     _camera_yaw = _facing_yaw
@@ -187,7 +214,12 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
     if not _is_player():
         return
-    if is_dizzy():
+    if event.is_pressed() and not event.is_echo():
+        for action in DODGE_ACTIONS:
+            if event.is_action_pressed(action):
+                _movement_press_sequence += 1
+                _movement_press_order[action] = _movement_press_sequence
+    if is_dizzy() or is_defeated():
         return
 
     if event is InputEventMouseButton:
@@ -195,7 +227,7 @@ func _unhandled_input(event: InputEvent) -> void:
         match mouse_button.button_index:
             MOUSE_BUTTON_LEFT:
                 _left_dragging = mouse_button.pressed
-                if mouse_button.pressed:
+                if mouse_button.pressed and not combat_component.is_dodging:
                     _start_left_attack_hold()
                 else:
                     _release_left_attack_hold()
@@ -219,23 +251,35 @@ func _unhandled_input(event: InputEvent) -> void:
             camera_pitch_max
         )
 
-        if _right_dragging:
+        if _right_dragging and not combat_component.is_dodging:
             _facing_yaw = _camera_yaw
             rotation.y = _facing_yaw + character_model_yaw_offset
 
 
 func _physics_process(delta: float) -> void:
-    if is_dizzy():
+    # Decisions precede movement; lifecycle completion follows the last motion step.
+    if _is_enemy():
+        ai_component.physics_process(delta)
+    elif Input.is_action_just_pressed("dodge"):
+        combat_component.start_dodge(_select_dodge_direction())
+
+    if is_dizzy() or is_defeated():
         _physics_process_incapacitated(delta)
+    elif combat_component.is_dodging:
+        _physics_process_dodge(delta)
     elif _is_player():
         _physics_process_player(delta)
     else:
-        combat_component.physics_process(delta)
-        ai_component.physics_process(delta)
         _physics_process_enemy(delta)
-        return
-
     combat_component.physics_process(delta)
+
+
+func _apply_gravity(delta: float) -> void:
+    if is_on_floor():
+        if velocity.y < 0.0:
+            velocity.y = 0.0
+    else:
+        velocity.y -= gravity * delta
 
 
 func _physics_process_incapacitated(delta: float) -> void:
@@ -244,11 +288,7 @@ func _physics_process_incapacitated(delta: float) -> void:
     velocity.x = 0.0
     velocity.z = 0.0
 
-    if is_on_floor():
-        if velocity.y < 0.0:
-            velocity.y = 0.0
-    else:
-        velocity.y -= gravity * delta
+    _apply_gravity(delta)
 
     move_and_slide()
     _travel(STATE_IDLE)
@@ -272,13 +312,9 @@ func _physics_process_player(delta: float) -> void:
     velocity.x = horizontal_velocity.x
     velocity.z = horizontal_velocity.z
 
-    if is_on_floor():
-        if Input.is_action_just_pressed("jump"):
-            velocity.y = jump_velocity
-        elif velocity.y < 0.0:
-            velocity.y = 0.0
-    else:
-        velocity.y -= gravity * delta
+    if is_on_floor() and Input.is_action_just_pressed("jump"):
+        velocity.y = jump_velocity
+    _apply_gravity(delta)
 
     move_and_slide()
     _update_animation_state()
@@ -305,11 +341,7 @@ func _physics_process_enemy(delta: float) -> void:
     velocity.x = horizontal_velocity.x
     velocity.z = horizontal_velocity.z
 
-    if is_on_floor():
-        if velocity.y < 0.0:
-            velocity.y = 0.0
-    else:
-        velocity.y -= gravity * delta
+    _apply_gravity(delta)
 
     move_and_slide()
     _update_animation_state()
@@ -329,7 +361,7 @@ func clear_ai_movement() -> void:
 
 
 func face_ai_target(world_position: Vector3) -> void:
-    if not _is_enemy():
+    if not _is_enemy() or combat_component.is_dodging:
         return
     var direction := world_position - global_position
     direction.y = 0.0
@@ -371,6 +403,27 @@ func _update_camera(delta: float, snap := false) -> void:
     camera.look_at(target, Vector3.UP)
 
 
+func _make_animation_tree_instance_local() -> bool:
+    if animation_tree == null:
+        push_warning("Character '%s' has no AnimationTree; initialization stopped." % name)
+        return false
+
+    animation_tree.active = false
+    if animation_tree.tree_root == null:
+        push_warning("Character '%s' has no AnimationTree root; initialization stopped." % name)
+        return false
+
+    # Attack filters are resource properties. Copy the authored graph, including
+    # resources nested in arrays/dictionaries, before caching or changing nodes.
+    var local_root := animation_tree.tree_root.duplicate_deep(Resource.DEEP_DUPLICATE_ALL) as AnimationRootNode
+    if local_root == null:
+        push_warning("Character '%s' could not isolate its AnimationTree; initialization stopped." % name)
+        return false
+
+    animation_tree.tree_root = local_root
+    return true
+
+
 func _setup_animation_tree() -> void:
     if animation_tree.tree_root == null:
         push_warning("AnimationTree has no tree_root configured.")
@@ -391,6 +444,7 @@ func _setup_animation_tree() -> void:
     _block_impact_one_shot = _get_one_shot_node(TREE_NODE_BLOCK_IMPACT_ONE_SHOT)
     _hit_react_one_shot = _get_one_shot_node(TREE_NODE_HIT_REACT_ONE_SHOT)
     _death_one_shot = _get_one_shot_node(TREE_NODE_DEATH_ONE_SHOT)
+    _setup_dodge_animation()
     _ensure_attack_method_tracks_are_filtered_in()
     _select_attack_animation(Combat_Component.AttackType.LIGHT)
     _current_state = ""
@@ -427,7 +481,7 @@ func _update_animation_state() -> void:
 
 
 func _start_left_attack_hold() -> void:
-    if _right_dragging:
+    if _right_dragging or combat_component.is_dodging:
         return
 
     _left_attack_held = true
@@ -626,7 +680,7 @@ func reset_combat_animation() -> void:
     if animation_tree == null or not animation_tree.active:
         return
 
-    for node_name in [TREE_NODE_ATTACK_ONE_SHOT, TREE_NODE_HIT_REACT_ONE_SHOT, TREE_NODE_BLOCK_IMPACT_ONE_SHOT, TREE_NODE_DEATH_ONE_SHOT]:
+    for node_name in [TREE_NODE_DODGE_ONE_SHOT, TREE_NODE_ATTACK_ONE_SHOT, TREE_NODE_HIT_REACT_ONE_SHOT, TREE_NODE_BLOCK_IMPACT_ONE_SHOT, TREE_NODE_DEATH_ONE_SHOT]:
         animation_tree.set(
             "parameters/%s/request" % node_name,
             AnimationNodeOneShot.ONE_SHOT_REQUEST_ABORT
@@ -655,6 +709,8 @@ func set_dizzy_animation(dizzy: bool) -> void:
 
 
 func clear_combat_inputs() -> void:
+    _movement_press_sequence = 0
+    _movement_press_order.clear()
     _left_dragging = false
     _right_dragging = false
     _cancel_left_attack_hold()
@@ -730,7 +786,7 @@ func _connect_customization_ui() -> void:
 func _equip_initial_player_loadout() -> void:
     for definition in initial_player_prop_definitions:
         if definition == null:
-            push_warning("Cannot equip initial player prop: definition is empty on %s." % name)
+            # Empty slots (for example the starting helmet) are intentional.
             continue
 
         equip_prop(definition)
@@ -822,6 +878,7 @@ func set_model(definition: CharacterModelDefinition) -> void:
         model_instance.queue_free()
         return
 
+    combat_component.cancel_dodge()
     animation_tree.active = false
     combat_component.clear_weapon_hitbox()
     if _active_skeleton != null and is_instance_valid(_active_skeleton):
@@ -876,6 +933,7 @@ func _skeleton_has_animation_bones(skeleton: Skeleton3D) -> bool:
 
 
 func apply_tint(color: Color) -> void:
+    combat_component.cancel_dodge()
     _current_tint = color
     var meshes := _get_tintable_meshes()
     for mesh_instance in meshes:
@@ -916,6 +974,7 @@ func equip_prop(definition: CharacterPropDefinition) -> void:
 
 
 func unequip_slot(slot: String) -> void:
+    combat_component.cancel_dodge()
     if slot == RIGHT_HAND_SLOT:
         combat_component.clear_weapon_hitbox()
 
@@ -1097,3 +1156,130 @@ func _combat_hitbox_open() -> void:
 
 func _combat_hitbox_close() -> void:
     combat_component.close_hitbox()
+
+
+func _select_dodge_direction() -> Combat_Component.DodgeDirection:
+    var selected := Combat_Component.DodgeDirection.BACKWARD
+    var newest := -1
+    for direction in DODGE_ACTIONS.size():
+        var action: String = DODGE_ACTIONS[direction]
+        var sequence: int = _movement_press_order.get(action, 0)
+        if Input.is_action_pressed(action) and sequence > newest:
+            newest = sequence
+            selected = direction as Combat_Component.DodgeDirection
+    return selected
+
+
+func _setup_dodge_animation() -> void:
+    _dodge_clip_lengths.clear()
+    _dodge_one_shot = _get_one_shot_node(TREE_NODE_DODGE_ONE_SHOT)
+    var graph := animation_tree.tree_root as AnimationNodeBlendTree
+    if _dodge_one_shot == null or not graph.has_node(TREE_NODE_DODGE_SELECTOR) or not graph.has_node(TREE_NODE_DODGE_TIME_SCALE):
+        push_warning("Dodge disabled: missing serialized dodge branch.")
+        return
+    if not graph.get_node(TREE_NODE_DODGE_SELECTOR) is AnimationNodeTransition or not graph.get_node(TREE_NODE_DODGE_TIME_SCALE) is AnimationNodeTimeScale:
+        push_warning("Dodge disabled: invalid selector or time-scale node type.")
+        return
+    var connections: Array = graph.get("node_connections")
+    for edge in [
+        ["DodgeSelector", 0, "DodgeForward"], ["DodgeSelector", 1, "DodgeBackward"],
+        ["DodgeSelector", 2, "DodgeLeft"], ["DodgeSelector", 3, "DodgeRight"],
+        ["DodgeTimeScale", 0, "DodgeSelector"], ["DodgeOneShot", 0, "AttackOneShot"],
+        ["DodgeOneShot", 1, "DodgeTimeScale"], ["DizzyBlend", 0, "DodgeOneShot"],
+    ]:
+        var connected := false
+        for index in range(0, connections.size(), 3):
+            if str(connections[index]) == edge[0] and connections[index + 1] == edge[1] and str(connections[index + 2]) == edge[2]:
+                connected = true
+                break
+        if not connected:
+            push_warning("Dodge disabled: disconnected serialized branch.")
+            return
+    for parameter in ["parameters/DodgeSelector/transition_request", "parameters/DodgeTimeScale/scale", "parameters/DodgeOneShot/request", "parameters/DodgeOneShot/active"]:
+        if animation_tree.get(parameter) == null:
+            push_warning("Dodge disabled: missing " + parameter)
+            return
+    for direction in DODGE_NAMES:
+        var clip := "dodge_%s/mixamo_com" % direction.to_lower()
+        if not animation_player.has_animation(clip) or animation_player.get_animation(clip).length <= 0.0:
+            _dodge_clip_lengths.clear()
+            push_warning("Dodge disabled: missing or empty " + clip)
+            return
+        _dodge_clip_lengths.append(animation_player.get_animation(clip).length)
+
+
+func can_play_dodge_animation() -> bool:
+    if animation_tree == null or not animation_tree.active or _dodge_one_shot == null or _dodge_clip_lengths.size() != 4:
+        return false
+    if dodge_duration <= 0.0 or dodge_distance < 0.0:
+        return false
+    for shot in [TREE_NODE_ATTACK_ONE_SHOT, TREE_NODE_HIT_REACT_ONE_SHOT, TREE_NODE_DEATH_ONE_SHOT, TREE_NODE_DODGE_ONE_SHOT]:
+        if animation_tree.get("parameters/%s/active" % shot) or animation_tree.get("parameters/%s/request" % shot) == AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE:
+            return false
+    return true
+
+
+func request_dodge_animation(direction: Combat_Component.DodgeDirection) -> bool:
+    if direction not in Combat_Component.DodgeDirection.values() or not can_play_dodge_animation():
+        return false
+    animation_tree.set("parameters/DodgeSelector/transition_request", DODGE_NAMES[direction])
+    animation_tree.set("parameters/DodgeTimeScale/scale", _dodge_clip_lengths[direction] / dodge_duration)
+    animation_tree.set("parameters/DodgeOneShot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
+    _dodge_direction = (Basis(Vector3.UP, _facing_yaw) * DODGE_VECTORS[direction]).normalized()
+    _dodge_elapsed = 0.0
+    _dodge_motion_duration = dodge_duration
+    _dodge_motion_distance = dodge_distance
+    _movement_input = Vector2.ZERO
+    _is_running = false
+    clear_ai_movement()
+    _cancel_left_attack_hold()
+    _travel(STATE_IDLE)
+    _dodge_visual.setup(self, DODGE_SHADER, dodge_opacity)
+    _dodge_visual.activate()
+    return true
+
+
+func is_dodge_animation_playing() -> bool:
+    return animation_tree != null and animation_tree.active and bool(animation_tree.get("parameters/DodgeOneShot/active"))
+
+
+func abort_dodge_animation() -> void:
+    if animation_tree != null and _dodge_one_shot != null:
+        animation_tree.set("parameters/DodgeOneShot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_ABORT)
+
+
+func stop_dodge_motion_and_visuals() -> void:
+    _dodge_direction = Vector3.ZERO
+    _dodge_elapsed = 0.0
+    _dodge_motion_duration = 0.0
+    _dodge_motion_distance = 0.0
+    velocity.x = 0.0
+    velocity.z = 0.0
+    _dodge_visual.deactivate()
+
+
+func _physics_process_dodge(delta: float) -> void:
+    var previous := clampf(_dodge_elapsed / _dodge_motion_duration, 0.0, 1.0)
+    _dodge_elapsed = minf(_dodge_elapsed + delta, _dodge_motion_duration)
+    var progress := _dodge_elapsed / _dodge_motion_duration
+    # Integral of a linear ease-out velocity. Blocked distance is discarded.
+    var distance := _dodge_motion_distance * ((2.0 * progress - progress * progress) - (2.0 * previous - previous * previous))
+    var horizontal := _dodge_direction * distance / delta
+    velocity.x = horizontal.x
+    velocity.z = horizontal.z
+    _apply_gravity(delta)
+    move_and_slide()
+    if _is_player():
+        _update_camera(delta)
+
+
+func _dodge_invulnerability_start() -> void:
+    combat_component.start_dodge_invulnerability()
+
+
+func _dodge_invulnerability_stop() -> void:
+    combat_component.stop_dodge_invulnerability()
+
+
+func _exit_tree() -> void:
+    _dodge_visual.deactivate()

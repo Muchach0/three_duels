@@ -7,3 +7,4 @@ script = ExtResource("1_ejxwx")
 profile_name = "Soldier"
 openings = 2
 metadata/_custom_type_script = "uid://dcq8apd0r3s7l"
+dodge_chance = 0.1

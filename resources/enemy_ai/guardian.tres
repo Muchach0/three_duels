@@ -11,3 +11,4 @@ heavy_attack_weight = 0.15
 combo_probability = 0.15
 max_combo_length = 2
 metadata/_custom_type_script = "uid://dcq8apd0r3s7l"
+dodge_chance = 0.2

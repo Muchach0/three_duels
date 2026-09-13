@@ -13,6 +13,9 @@ enum Tier {
 @export var block_chance := Tier.LOW
 @export var openings := Tier.LOW
 
+@export_group("Defense")
+@export_range(0.0, 1.0, 0.01) var dodge_chance := 0.0
+
 @export_group("Sensing")
 @export var perception_radius := 12.0
 @export var attack_range := 1.8

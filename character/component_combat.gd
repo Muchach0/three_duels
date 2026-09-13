@@ -13,12 +13,16 @@ signal attack_started(attack_type: int)
 signal attack_finished(attack_type: int)
 signal stagger_started
 signal stagger_finished
+signal dodge_started(direction: int)
+signal dodge_finished(direction: int, interrupted: bool)
 signal defeated
 
 const COMBAT_LAYER_PLAYER_WEAPON := 1 << 1
 const COMBAT_LAYER_ENEMY_WEAPON := 1 << 2
 const COMBAT_LAYER_PLAYER_HURTBOX := 1 << 3
 const COMBAT_LAYER_ENEMY_HURTBOX := 1 << 4
+
+enum DodgeDirection { FORWARD, BACKWARD, LEFT, RIGHT }
 
 enum AttackType {
 	LIGHT,
@@ -34,6 +38,12 @@ var guard := 100.0
 var is_blocking := false
 var is_defeated := false
 var is_dizzy := false
+var is_dodging := false
+var is_invulnerable := false
+var _dodge_direction := DodgeDirection.BACKWARD
+var _dodge_animation_started := false
+var _dodge_elapsed := 0.0
+var _dodge_timeout := 0.0
 
 var _attack_sequence_id := 0
 var _active_attack_id := 0
@@ -46,6 +56,7 @@ var _dizzy_time_remaining := 0.0
 
 
 func setup(owner_character: Node3D, hurtbox_node: Area3D) -> void:
+	cancel_dodge()
 	character = owner_character
 	hurtbox = hurtbox_node
 	health = maxf(max_health, 0.0)
@@ -72,9 +83,10 @@ func setup(owner_character: Node3D, hurtbox_node: Area3D) -> void:
 	emit_combat_stats_changed.call_deferred()
 
 
-func physics_process(_delta: float) -> void:
-	_update_dizzy(_delta)
+func physics_process(delta: float) -> void:
+	_update_dizzy(delta)
 	_update_attack_window()
+	_update_dodge(delta)
 
 
 func attack(attack_type := AttackType.LIGHT) -> bool:
@@ -97,7 +109,7 @@ func is_attack_in_progress() -> bool:
 
 
 func set_blocking(blocking: bool) -> void:
-	blocking = blocking and (_is_player() or _is_enemy()) and not is_defeated and not is_dizzy
+	blocking = blocking and (_is_player() or _is_enemy()) and not is_defeated and not is_dizzy and not is_dodging
 	var changed := is_blocking != blocking
 
 	is_blocking = blocking
@@ -150,7 +162,7 @@ func find_weapon_hitbox(node: Node) -> Area3D:
 
 
 func set_weapon_hitbox_active(active: bool) -> void:
-	_weapon_hitbox_active = active and (_is_player() or _is_enemy()) and not is_defeated and not is_dizzy
+	_weapon_hitbox_active = active and (_is_player() or _is_enemy()) and not is_defeated and not is_dizzy and not is_dodging
 	if weapon_hitbox == null:
 		return
 
@@ -177,6 +189,7 @@ func emit_combat_stats_changed() -> void:
 
 
 func reset_for_duel() -> void:
+	cancel_dodge()
 	cancel_attack()
 	_attack_sequence_id = 0
 	_active_attack_id = 0
@@ -228,7 +241,7 @@ func _setup_weapon_hitbox() -> void:
 
 
 func _can_start_attack() -> bool:
-	if not (_is_player() or _is_enemy()) or is_defeated or is_blocking or is_dizzy:
+	if not (_is_player() or _is_enemy()) or is_defeated or is_blocking or is_dizzy or is_dodging:
 		return false
 	if character == null or not character.has_method("can_play_attack_animation"):
 		return false
@@ -352,7 +365,7 @@ func _can_attack(defender: Node) -> bool:
 
 
 func _can_receive_hit(attacker: Node) -> bool:
-	if is_defeated or attacker == character:
+	if is_defeated or is_invulnerable or attacker == character:
 		return false
 	if attacker == null:
 		return false
@@ -401,6 +414,7 @@ func _apply_health_damage(amount: float, hit_data: Dictionary) -> void:
 	if amount <= 0.0 or is_defeated:
 		return
 
+	cancel_dodge()
 	health = maxf(health - amount, 0.0)
 	EventBus.combat_damage_applied.emit(character, hit_data)
 	emit_combat_stats_changed()
@@ -423,6 +437,7 @@ func _enter_dizzy() -> void:
 	if is_defeated or is_dizzy:
 		return
 
+	cancel_dodge()
 	is_dizzy = true
 	stagger_started.emit()
 	_dizzy_time_remaining = maxf(dizzy_duration, 0.0)
@@ -491,3 +506,72 @@ func _is_opposing_character(other_character: Node) -> bool:
 	if _is_enemy():
 		return other_character.has_method("is_player_character") and bool(other_character.call("is_player_character"))
 	return false
+
+
+func can_start_dodge() -> bool:
+	if not (_is_player() or _is_enemy()) or is_defeated or is_dizzy or is_dodging:
+		return false
+	if _attack_window_pending or not character.is_on_floor():
+		return false
+	return character.can_play_dodge_animation()
+
+
+func start_dodge(direction: DodgeDirection) -> bool:
+	if direction not in DodgeDirection.values() or not can_start_dodge():
+		return false
+	var was_blocking := is_blocking
+	set_blocking(false)
+	is_dodging = true
+	is_invulnerable = false
+	_dodge_direction = direction
+	_dodge_animation_started = false
+	_dodge_elapsed = 0.0
+	_dodge_timeout = character.dodge_duration + 0.5
+	if not character.request_dodge_animation(direction):
+		is_dodging = false
+		_dodge_timeout = 0.0
+		_dodge_direction = DodgeDirection.BACKWARD
+		character.stop_dodge_motion_and_visuals()
+		set_blocking(was_blocking)
+		return false
+	dodge_started.emit(direction)
+	return true
+
+
+func cancel_dodge(interrupted := true) -> void:
+	is_invulnerable = false
+	if not is_dodging:
+		return
+	var direction := _dodge_direction
+	is_dodging = false
+	_dodge_animation_started = false
+	_dodge_elapsed = 0.0
+	_dodge_timeout = 0.0
+	_dodge_direction = DodgeDirection.BACKWARD
+	if interrupted:
+		character.abort_dodge_animation()
+	character.stop_dodge_motion_and_visuals()
+	dodge_finished.emit(direction, interrupted)
+
+
+func start_dodge_invulnerability() -> void:
+	if is_dodging and not is_dizzy and not is_defeated:
+		is_invulnerable = true
+
+
+func stop_dodge_invulnerability() -> void:
+	is_invulnerable = false
+
+
+func _update_dodge(delta: float) -> void:
+	if not is_dodging:
+		return
+	_dodge_elapsed += delta
+	if is_defeated or is_dizzy:
+		cancel_dodge()
+	elif character.is_dodge_animation_playing():
+		_dodge_animation_started = true
+	elif _dodge_animation_started:
+		cancel_dodge(false)
+	if is_dodging and (_dodge_elapsed > _dodge_timeout or (not _dodge_animation_started and _dodge_elapsed > 0.25)):
+		cancel_dodge()

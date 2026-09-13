@@ -11,6 +11,7 @@ enum State {
 	RECOVER,
 	STAGGER,
 	DEATH,
+	DODGE,
 }
 
 @export var ai_enabled := true
@@ -79,6 +80,9 @@ func physics_process(delta: float) -> void:
 			_update_block(delta)
 		State.RECOVER:
 			_update_recover(delta)
+		State.DODGE:
+			if not _combat.is_dodging:
+				_transition_to(State.RECOVER)
 		State.STAGGER:
 			if not _combat.is_dizzy:
 				_transition_to(State.RECOVER)
@@ -183,9 +187,20 @@ func _update_player_attack_edge() -> void:
 	var is_playing: bool = _target != null and _target.is_attack_animation_playing()
 	var attack_started: bool = is_playing and not _previous_player_attack_playing
 	_previous_player_attack_playing = is_playing
-	if not attack_started or (_state != State.IDLE and _state != State.APPROACH_PLAYER):
+	if _debug_override != null or not attack_started or (_state != State.IDLE and _state != State.APPROACH_PLAYER):
 		return
-	if _distance_to(_target) <= profile.reaction_range and _rng.randf() < profile.get_block_probability():
+	if _distance_to(_target) > profile.reaction_range:
+		return
+	var roll := _rng.randf()
+	var dodge_chance := clampf(profile.dodge_chance, 0.0, 1.0)
+	if roll < dodge_chance:
+		_face_target()
+		var direction := _rng.randi_range(Combat_Component.DodgeDirection.BACKWARD, Combat_Component.DodgeDirection.RIGHT)
+		if _combat.start_dodge(direction):
+			_transition_to(State.DODGE)
+		elif not _combat.is_dizzy and not _combat.is_defeated and not _combat.is_dodging:
+			_transition_to(State.BLOCK)
+	elif dodge_chance < 1.0 and (roll - dodge_chance) / (1.0 - dodge_chance) < profile.get_block_probability():
 		_transition_to(State.BLOCK)
 
 
@@ -295,6 +310,11 @@ func _transition_to(next_state: State, reset := false) -> void:
 			_character.clear_ai_movement()
 			_state_time_remaining = profile.block_reaction_delay
 			_block_time_remaining = profile.block_duration
+		State.DODGE:
+			_character.clear_ai_movement()
+			_combat.set_blocking(false)
+			_attack_finished = false
+			_combo_count = 0
 		State.RECOVER:
 			_character.clear_ai_movement()
 			_combat.set_blocking(false)

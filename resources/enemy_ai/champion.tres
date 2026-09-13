@@ -14,3 +14,4 @@ combo_probability = 0.7
 max_combo_length = 3
 approach_running = true
 metadata/_custom_type_script = "uid://dcq8apd0r3s7l"
+dodge_chance = 0.35
