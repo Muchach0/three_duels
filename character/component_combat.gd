@@ -6,7 +6,7 @@ class_name Combat_Component
 @export var max_guard := 100.0
 @export var attack_health_damage := 20.0
 @export var attack_guard_damage := 35.0
-@export var heavy_attack_health_damage := 20.0
+@export var heavy_attack_health_damage := 35.0
 @export var heavy_attack_guard_damage := 70.0
 @export var dizzy_duration := 2.0
 
@@ -44,6 +44,7 @@ var weapon_hitbox_shape: CollisionShape3D
 var health := 100.0
 var guard := 100.0
 var stamina := 100.0
+var is_active := true
 var _stamina_regen_elapsed := 0.0
 var is_blocking := false
 var is_defeated := false
@@ -69,6 +70,7 @@ func setup(owner_character: Node3D, hurtbox_node: Area3D) -> void:
 	cancel_dodge()
 	character = owner_character
 	hurtbox = hurtbox_node
+	is_active = true
 	health = maxf(max_health, 0.0)
 	guard = maxf(max_guard, 0.0)
 	stamina = maxf(max_stamina, 0.0)
@@ -96,6 +98,8 @@ func setup(owner_character: Node3D, hurtbox_node: Area3D) -> void:
 
 
 func physics_process(delta: float) -> void:
+	if not is_active:
+		return
 	# Count eligibility before completing actions: their last frame is still busy.
 	_update_stamina(delta)
 	_update_dizzy(delta)
@@ -119,7 +123,7 @@ func attack(attack_type := AttackType.LIGHT) -> bool:
 func can_start_attack(attack_type := AttackType.LIGHT) -> bool:
 	if attack_type not in AttackType.values():
 		return false
-	if not (_is_player() or _is_enemy()) or is_defeated or is_blocking or is_dizzy or is_dodging or _attack_window_pending:
+	if not is_active or not (_is_player() or _is_enemy()) or is_defeated or is_blocking or is_dizzy or is_dodging or _attack_window_pending:
 		return false
 	if attack_type == AttackType.HEAVY and not _can_afford_stamina(heavy_attack_stamina_cost):
 		return false
@@ -131,7 +135,7 @@ func is_attack_in_progress() -> bool:
 
 
 func set_blocking(blocking: bool) -> void:
-	blocking = blocking and (_is_player() or _is_enemy()) and not is_defeated and not is_dizzy and not is_dodging
+	blocking = blocking and is_active and (_is_player() or _is_enemy()) and not is_defeated and not is_dizzy and not is_dodging
 	var changed := is_blocking != blocking
 
 	is_blocking = blocking
@@ -152,6 +156,12 @@ func receive_hit(attacker: Node, hit_data: Dictionary) -> void:
 	var previous_defense := get_defense()
 	var blocked := is_blocking
 	var defense_broken := false
+	# Snapshot spatial context before reactions/defeat listeners run.
+	var result := {
+		"position": character.global_position,
+		"attacker_position": (attacker as Node3D).global_position,
+		"attack_type": int(hit_data.get("attack_type", AttackType.LIGHT)),
+	}
 	var health_damage := maxf(float(hit_data.get("health_damage", 0.0)), 0.0)
 	if blocked:
 		var cost := _get_block_cost(block_stamina_cost if _is_player() else float(hit_data.get("guard_damage", 0.0)))
@@ -163,6 +173,10 @@ func receive_hit(attacker: Node, hit_data: Dictionary) -> void:
 	_apply_health_damage(health_damage, not blocked)
 	if defense_broken:
 		_enter_dizzy()
+	result["health_lost"] = previous_health - health
+	result["blocked"] = blocked
+	result["defense_broken"] = defense_broken
+	EventBus.combat_hit_resolved.emit(character, result)
 	if health != previous_health or get_defense() != previous_defense:
 		EventBus.combat_damage_applied.emit(character, hit_data)
 		emit_combat_stats_changed()
@@ -198,7 +212,7 @@ func find_weapon_hitbox(node: Node) -> Area3D:
 
 
 func set_weapon_hitbox_active(active: bool) -> void:
-	_weapon_hitbox_active = active and (_is_player() or _is_enemy()) and not is_defeated and not is_dizzy and not is_dodging
+	_weapon_hitbox_active = active and is_active and (_is_player() or _is_enemy()) and not is_defeated and not is_dizzy and not is_dodging
 	if weapon_hitbox == null:
 		return
 
@@ -233,6 +247,7 @@ func get_max_defense() -> float:
 
 
 func reset_for_duel() -> void:
+	is_active = true
 	cancel_dodge()
 	cancel_attack()
 	_attack_sequence_id = 0
@@ -257,6 +272,15 @@ func reset_for_duel() -> void:
 		character.call("set_dizzy_animation", false)
 		character.call("reset_combat_animation")
 	emit_combat_stats_changed()
+
+
+## Stop gameplay at the finishing blow while the character's AnimationTree keeps playing.
+func finish_duel() -> void:
+	is_active = false
+	cancel_attack()
+	cancel_dodge()
+	set_blocking(false)
+	set_weapon_hitbox_active(false)
 
 
 func _setup_hurtbox() -> void:
@@ -403,9 +427,9 @@ func _can_attack(defender: Node) -> bool:
 
 
 func _can_receive_hit(attacker: Node) -> bool:
-	if is_defeated or is_invulnerable or attacker == character:
+	if not is_active or is_defeated or is_invulnerable or attacker == character:
 		return false
-	if attacker == null:
+	if not is_instance_valid(attacker) or not attacker is Node3D:
 		return false
 	return _is_opposing_character(attacker)
 
@@ -584,7 +608,7 @@ func _is_opposing_character(other_character: Node) -> bool:
 
 
 func can_start_dodge() -> bool:
-	if not (_is_player() or _is_enemy()) or is_defeated or is_dizzy or is_dodging:
+	if not is_active or not (_is_player() or _is_enemy()) or is_defeated or is_dizzy or is_dodging:
 		return false
 	if _attack_window_pending or not character.is_on_floor():
 		return false

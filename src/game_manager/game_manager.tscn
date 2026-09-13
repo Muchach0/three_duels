@@ -8,6 +8,12 @@ script = ExtResource("1_fgsf7")
 [node name="WorldRoot" type="Node3D" parent="." unique_id=175001]
 process_mode = 3
 
+[node name="FinishDelay" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
 [node name="UIRoot" type="CanvasLayer" parent="." unique_id=175002]
 layer = 10
 process_mode = 3
+
+[connection signal="timeout" from="FinishDelay" to="." method="_on_finish_delay_timeout"]

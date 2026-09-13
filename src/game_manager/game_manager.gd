@@ -7,6 +7,7 @@ enum State {
     UPGRADE_SELECTION,
     DEFEAT,
     VICTORY,
+    DUEL_ENDING,
 }
 
 
@@ -36,6 +37,7 @@ const DUEL_CONFIG := [
 
 @onready var world_root: Node3D = $WorldRoot
 @onready var ui_root: CanvasLayer = $UIRoot
+@onready var finish_delay: Timer = $FinishDelay
 
 var flow_state := State.MAIN_MENU
 var current_duel_index := 0
@@ -45,6 +47,7 @@ var arena_instance: Node3D
 var enemy_instance: Node3D
 var current_menu: Control
 var _current_reward_props: Array[CharacterPropDefinition] = []
+var _player_lost := false
 
 
 func _ready() -> void:
@@ -130,7 +133,7 @@ func start_duel(duel_index: int) -> void:
 
 
 func show_upgrade_selection(defeated_enemy: Node) -> void:
-    if flow_state != State.DUEL or defeated_enemy != enemy_instance:
+    if flow_state != State.DUEL_ENDING or defeated_enemy != enemy_instance:
         return
     if not is_instance_valid(defeated_enemy) or not defeated_enemy.has_method("get_equipped_prop_definitions"):
         push_warning("Cannot create reward choices: defeated enemy has no equipped-prop API.")
@@ -177,7 +180,7 @@ func on_upgrade_selected(prop_definition: CharacterPropDefinition) -> void:
 
 
 func show_defeat_menu() -> void:
-    if flow_state != State.DUEL:
+    if flow_state != State.DUEL_ENDING:
         return
     flow_state = State.DEFEAT
     _cleanup_menu()
@@ -197,7 +200,7 @@ func retry_current_duel() -> void:
 
 
 func show_victory_menu() -> void:
-    if flow_state != State.DUEL:
+    if flow_state != State.DUEL_ENDING:
         return
     flow_state = State.VICTORY
     _current_reward_props.clear()
@@ -220,17 +223,26 @@ func return_to_main_menu() -> void:
 func _on_character_defeated(character: Node) -> void:
     if flow_state != State.DUEL or not is_instance_valid(character):
         return
-    if character == player_instance:
-        if character.has_method("is_player_character") and character.call("is_player_character"):
-            call_deferred("show_defeat_menu")
+    if character != player_instance and character != enemy_instance:
         return
-    if character != enemy_instance or not character.has_method("is_enemy_character") or not character.call("is_enemy_character"):
-        return
+    flow_state = State.DUEL_ENDING
+    _player_lost = character == player_instance
+    for fighter in [player_instance, enemy_instance]:
+        fighter.finish_duel()
+    finish_delay.start()
 
-    if current_duel_index == DUEL_CONFIG.size() - 1:
-        call_deferred("show_victory_menu")
+
+func _on_finish_delay_timeout() -> void:
+    if flow_state != State.DUEL_ENDING:
+        return
+    # The idle Timer has left the hit's physics callbacks, so fighters can be freed.
+    arena_instance.get_node("CombatFeedback").clear()
+    if _player_lost:
+        show_defeat_menu()
+    elif current_duel_index == DUEL_CONFIG.size() - 1:
+        show_victory_menu()
     else:
-        call_deferred("show_upgrade_selection", character)
+        show_upgrade_selection(enemy_instance)
 
 
 func _show_menu(menu_scene: PackedScene) -> Control:
@@ -280,6 +292,7 @@ func _clear_current_enemy() -> void:
 
 
 func _clear_current_arena() -> void:
+    finish_delay.stop()
     if is_instance_valid(arena_instance):
         arena_instance.free()
     arena_instance = null

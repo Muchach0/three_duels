@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://qcwgo0q4wl7o" path="res://character/character_2.tscn" id="1_h8avn"]
 [ext_resource type="PackedScene" uid="uid://dndf3hc6kgtjg" path="res://scenes/Ui.tscn" id="2_vqwjj"]
 [ext_resource type="Resource" uid="uid://d4io6gm1t8l7m" path="res://resources/enemy_ai/soldier.tres" id="3_503t6"]
+[ext_resource type="PackedScene" path="res://src/combat_feedback/combat_feedback.tscn" id="4_feedback"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_7an68"]
 
@@ -14,6 +15,8 @@ size = Vector3(7.015357, 0.1, 8.221632)
 [sub_resource type="BoxShape3D" id="BoxShape3D_7an68"]
 
 [node name="Empty" type="Node3D" unique_id=827904485]
+
+[node name="CombatFeedback" parent="." instance=ExtResource("4_feedback")]
 
 [node name="plane" type="StaticBody3D" parent="." unique_id=1746676193]
 

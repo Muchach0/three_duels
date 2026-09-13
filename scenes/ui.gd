@@ -14,6 +14,8 @@ var _enemy_rows: Dictionary = {}
 
 
 func _ready() -> void:
+    for bar in [player_health_bar, player_stamina_bar, enemy_health_bar, enemy_guard_bar]:
+        _configure_stat_bar(bar)
     if not EventBus.combat_stats_changed.is_connected(_on_combat_stats_changed):
         EventBus.combat_stats_changed.connect(_on_combat_stats_changed)
     _sync_existing_combat_characters.call_deferred()
@@ -89,6 +91,28 @@ func _set_bars(health_bar: ProgressBar, defense_bar: ProgressBar, health_value: 
     health_bar.value = clampf(health_value, 0.0, health_bar.max_value)
     defense_bar.max_value = maxf(max_defense_value, 1.0)
     defense_bar.value = clampf(defense_value, 0.0, defense_bar.max_value)
+    _update_stat_bar_label(health_bar)
+    _update_stat_bar_label(defense_bar)
+
+
+func _configure_stat_bar(bar: ProgressBar) -> void:
+    # Preserve the bar's height when replacing its built-in percentage text.
+    bar.custom_minimum_size = bar.get_combined_minimum_size()
+    bar.show_percentage = false
+    var label := Label.new()
+    label.name = "ValueLabel"
+    label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+    label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    bar.add_child(label)
+    label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    _update_stat_bar_label(bar)
+
+
+func _update_stat_bar_label(bar: ProgressBar) -> void:
+    var label := bar.get_node("ValueLabel") as Label
+    label.text = "%d / %d" % [roundi(bar.value), roundi(bar.max_value)]
+    bar.custom_minimum_size = bar.custom_minimum_size.max(label.get_combined_minimum_size())
 
 
 func _get_enemy_row(character: Node) -> Dictionary:
@@ -129,10 +153,12 @@ func _create_enemy_row(label_text: String) -> Dictionary:
     var health_bar := ProgressBar.new()
     health_bar.step = 1.0
     enemy_list.add_child(health_bar)
+    _configure_stat_bar(health_bar)
 
     var guard_bar := ProgressBar.new()
     guard_bar.step = 1.0
     enemy_list.add_child(guard_bar)
+    _configure_stat_bar(guard_bar)
 
     return {
         "label": label,

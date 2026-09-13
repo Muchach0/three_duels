@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dndf3hc6kgtjg" path="res://scenes/Ui.tscn" id="1_e05a3"]
 [ext_resource type="PackedScene" uid="uid://csu5nse3qloee" path="res://assets/environment/arena.glb" id="2_wl4x5"]
+[ext_resource type="PackedScene" path="res://src/combat_feedback/combat_feedback.tscn" id="3_feedback"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_wl4x5"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -25,6 +26,8 @@ material = SubResource("StandardMaterial3D_ug7gw")
 size = Vector3(47.64251, 0.1, 44.280754)
 
 [node name="Arena" type="Node3D" unique_id=444386669]
+
+[node name="CombatFeedback" parent="." instance=ExtResource("3_feedback")]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2011175236]
 environment = SubResource("Environment_xdvfk")

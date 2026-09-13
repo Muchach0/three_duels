@@ -212,7 +212,7 @@ func _ready() -> void:
     EventBus.ui_test_sword_enable_collision.connect(_test_sword_collision)
 
 func _unhandled_input(event: InputEvent) -> void:
-    if not _is_player():
+    if not _is_player() or not combat_component.is_active:
         return
     if event.is_pressed() and not event.is_echo():
         for action in DODGE_ACTIONS:
@@ -257,6 +257,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+    if not combat_component.is_active:
+        return
     # Decisions precede movement; lifecycle completion follows the last motion step.
     if _is_enemy():
         ai_component.physics_process(delta)
@@ -553,6 +555,13 @@ func is_dizzy() -> bool:
 func reset_for_duel() -> void:
     if combat_component != null:
         combat_component.reset_for_duel()
+
+
+func finish_duel() -> void:
+    combat_component.finish_duel()
+    clear_combat_inputs()
+    clear_ai_movement()
+    velocity = Vector3.ZERO
 
 
 func get_equipped_prop_definition(slot: String) -> CharacterPropDefinition:
