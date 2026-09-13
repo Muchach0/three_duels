@@ -2,7 +2,7 @@
 extends Node
 
 @onready var player_health_bar: ProgressBar = $CanvasLayer/PlayerControl/HBoxContainer/EnemyLifeBar
-@onready var player_guard_bar: ProgressBar = $CanvasLayer/PlayerControl/HBoxContainer/EnemyGuardBar
+@onready var player_stamina_bar: ProgressBar = $CanvasLayer/PlayerControl/HBoxContainer/PlayerStaminaBar
 @onready var enemy_list: VBoxContainer = $CanvasLayer/EnemyControl/HBoxContainer
 @onready var enemy_label: Label = $CanvasLayer/EnemyControl/HBoxContainer/EnemyLabel
 @onready var enemy_profile_label: Label = $CanvasLayer/EnemyControl/HBoxContainer/ProfileLabel
@@ -60,20 +60,20 @@ func _sync_existing_combat_characters() -> void:
                 character,
                 combat_component.health,
                 combat_component.max_health,
-                combat_component.guard,
-                combat_component.max_guard
+                combat_component.get_defense(),
+                combat_component.get_max_defense()
             )
             if character.is_enemy_character():
                 _connect_enemy_ai(character)
 
 
-func _on_combat_stats_changed(character: Node, health: float, max_health: float, guard: float, max_guard: float) -> void:
-    _update_character_stats(character, health, max_health, guard, max_guard)
+func _on_combat_stats_changed(character: Node, health: float, max_health: float, defense: float, max_defense: float) -> void:
+    _update_character_stats(character, health, max_health, defense, max_defense)
 
 
-func _update_character_stats(character: Node, health: float, max_health: float, guard: float, max_guard: float) -> void:
+func _update_character_stats(character: Node, health: float, max_health: float, defense: float, max_defense: float) -> void:
     if character.has_method("is_player_character") and character.is_player_character():
-        _set_bars(player_health_bar, player_guard_bar, health, max_health, guard, max_guard)
+        _set_bars(player_health_bar, player_stamina_bar, health, max_health, defense, max_defense)
     elif character.has_method("is_enemy_character") and character.is_enemy_character():
         var row := _get_enemy_row(character)
         var label := row["label"] as Label
@@ -81,14 +81,14 @@ func _update_character_stats(character: Node, health: float, max_health: float, 
         var guard_bar := row["guard_bar"] as ProgressBar
         label.text = character.name
         _update_enemy_ai_labels(character, row)
-        _set_bars(health_bar, guard_bar, health, max_health, guard, max_guard)
+        _set_bars(health_bar, guard_bar, health, max_health, defense, max_defense)
 
 
-func _set_bars(health_bar: ProgressBar, guard_bar: ProgressBar, health_value: float, max_health_value: float, guard_value: float, max_guard_value: float) -> void:
+func _set_bars(health_bar: ProgressBar, defense_bar: ProgressBar, health_value: float, max_health_value: float, defense_value: float, max_defense_value: float) -> void:
     health_bar.max_value = maxf(max_health_value, 1.0)
     health_bar.value = clampf(health_value, 0.0, health_bar.max_value)
-    guard_bar.max_value = maxf(max_guard_value, 1.0)
-    guard_bar.value = clampf(guard_value, 0.0, guard_bar.max_value)
+    defense_bar.max_value = maxf(max_defense_value, 1.0)
+    defense_bar.value = clampf(defense_value, 0.0, defense_bar.max_value)
 
 
 func _get_enemy_row(character: Node) -> Dictionary:

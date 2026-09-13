@@ -2,12 +2,20 @@ extends Node
 class_name Combat_Component
 
 @export var max_health := 100.0
+## Enemy guard capacity. Player-mode characters use max_stamina instead.
 @export var max_guard := 100.0
 @export var attack_health_damage := 20.0
 @export var attack_guard_damage := 35.0
 @export var heavy_attack_health_damage := 20.0
 @export var heavy_attack_guard_damage := 70.0
 @export var dizzy_duration := 2.0
+
+@export_group("Player Stamina")
+@export_range(0.0, 1000.0, 1.0, "or_greater") var max_stamina := 100.0
+@export_range(0.0, 1000.0, 1.0, "or_greater") var block_stamina_cost := 20.0
+@export_range(0.0, 1000.0, 1.0, "or_greater") var dodge_stamina_cost := 20.0
+@export_range(0.0, 1000.0, 1.0, "or_greater") var heavy_attack_stamina_cost := 20.0
+@export_range(0.0, 1000.0, 1.0, "or_greater") var stamina_regen_per_second := 5.0
 
 signal attack_started(attack_type: int)
 signal attack_finished(attack_type: int)
@@ -35,6 +43,8 @@ var weapon_hitbox: Area3D
 var weapon_hitbox_shape: CollisionShape3D
 var health := 100.0
 var guard := 100.0
+var stamina := 100.0
+var _stamina_regen_elapsed := 0.0
 var is_blocking := false
 var is_defeated := false
 var is_dizzy := false
@@ -61,6 +71,8 @@ func setup(owner_character: Node3D, hurtbox_node: Area3D) -> void:
 	hurtbox = hurtbox_node
 	health = maxf(max_health, 0.0)
 	guard = maxf(max_guard, 0.0)
+	stamina = maxf(max_stamina, 0.0)
+	_stamina_regen_elapsed = 0.0
 	is_defeated = health <= 0.0
 	is_blocking = false
 	is_dizzy = false
@@ -84,24 +96,34 @@ func setup(owner_character: Node3D, hurtbox_node: Area3D) -> void:
 
 
 func physics_process(delta: float) -> void:
+	# Count eligibility before completing actions: their last frame is still busy.
+	_update_stamina(delta)
 	_update_dizzy(delta)
 	_update_attack_window()
 	_update_dodge(delta)
 
 
 func attack(attack_type := AttackType.LIGHT) -> bool:
-	if not can_start_attack():
+	if not can_start_attack(attack_type):
 		return false
 
 	character.call("set_attack_filter_for_movement")
 	character.call("request_attack_animation", attack_type)
 	_start_attack_window(attack_type)
+	if attack_type == AttackType.HEAVY:
+		_spend_stamina(heavy_attack_stamina_cost)
 	attack_started.emit(attack_type)
 	return true
 
 
-func can_start_attack() -> bool:
-	return _can_start_attack()
+func can_start_attack(attack_type := AttackType.LIGHT) -> bool:
+	if attack_type not in AttackType.values():
+		return false
+	if not (_is_player() or _is_enemy()) or is_defeated or is_blocking or is_dizzy or is_dodging or _attack_window_pending:
+		return false
+	if attack_type == AttackType.HEAVY and not _can_afford_stamina(heavy_attack_stamina_cost):
+		return false
+	return bool(character.call("can_play_attack_animation"))
 
 
 func is_attack_in_progress() -> bool:
@@ -126,10 +148,24 @@ func receive_hit(attacker: Node, hit_data: Dictionary) -> void:
 		return
 
 	EventBus.combat_hit_detected.emit(attacker, character, hit_data)
-	if is_blocking:
-		_apply_guard_damage(float(hit_data.get("guard_damage", 0.0)), hit_data)
-	else:
-		_apply_health_damage(float(hit_data.get("health_damage", 0.0)), hit_data)
+	var previous_health := health
+	var previous_defense := get_defense()
+	var blocked := is_blocking
+	var defense_broken := false
+	var health_damage := maxf(float(hit_data.get("health_damage", 0.0)), 0.0)
+	if blocked:
+		var cost := _get_block_cost(block_stamina_cost if _is_player() else float(hit_data.get("guard_damage", 0.0)))
+		health_damage = _absorb_blocked_hit(health_damage, cost)
+		defense_broken = cost > 0.0 and get_defense() <= 0.0
+	var helmet: CharacterPropDefinition = character.call("get_equipped_prop_definition", "head")
+	if helmet != null:
+		health_damage = maxf(health_damage - helmet.armor_value, 0.0)
+	_apply_health_damage(health_damage, not blocked)
+	if defense_broken:
+		_enter_dizzy()
+	if health != previous_health or get_defense() != previous_defense:
+		EventBus.combat_damage_applied.emit(character, hit_data)
+		emit_combat_stats_changed()
 
 
 func set_weapon_hitbox(hitbox: Area3D) -> void:
@@ -185,7 +221,15 @@ func close_hitbox() -> void:
 
 
 func emit_combat_stats_changed() -> void:
-	EventBus.combat_stats_changed.emit(character, health, max_health, guard, max_guard)
+	EventBus.combat_stats_changed.emit(character, health, max_health, get_defense(), get_max_defense())
+
+
+func get_defense() -> float:
+	return stamina if _is_player() else guard
+
+
+func get_max_defense() -> float:
+	return max_stamina if _is_player() else max_guard
 
 
 func reset_for_duel() -> void:
@@ -201,6 +245,8 @@ func reset_for_duel() -> void:
 	_dizzy_time_remaining = 0.0
 	health = maxf(max_health, 0.0)
 	guard = maxf(max_guard, 0.0)
+	stamina = maxf(max_stamina, 0.0)
+	_stamina_regen_elapsed = 0.0
 	is_defeated = false
 	is_blocking = false
 	is_dizzy = false
@@ -238,14 +284,6 @@ func _setup_weapon_hitbox() -> void:
 	weapon_hitbox.collision_mask = COMBAT_LAYER_ENEMY_HURTBOX if _is_player() else COMBAT_LAYER_PLAYER_HURTBOX
 	if not weapon_hitbox.area_entered.is_connected(_on_weapon_hitbox_area_entered):
 		weapon_hitbox.area_entered.connect(_on_weapon_hitbox_area_entered)
-
-
-func _can_start_attack() -> bool:
-	if not (_is_player() or _is_enemy()) or is_defeated or is_blocking or is_dizzy or is_dodging:
-		return false
-	if character == null or not character.has_method("can_play_attack_animation"):
-		return false
-	return bool(character.call("can_play_attack_animation"))
 
 
 func _start_attack_window(attack_type: int) -> void:
@@ -384,10 +422,9 @@ func _build_hit_data(defender: Node) -> Dictionary:
 
 
 func _get_active_attack_health_damage() -> float:
-	if _active_attack_type == AttackType.HEAVY:
-		return heavy_attack_health_damage
-
-	return attack_health_damage
+	var base_damage := heavy_attack_health_damage if _active_attack_type == AttackType.HEAVY else attack_health_damage
+	var weapon: CharacterPropDefinition = character.call("get_equipped_prop_definition", "right_hand")
+	return base_damage + (weapon.damage_bonus if weapon != null else 0.0)
 
 
 func _get_active_attack_guard_damage() -> float:
@@ -397,27 +434,34 @@ func _get_active_attack_guard_damage() -> float:
 	return attack_guard_damage
 
 
-func _apply_guard_damage(amount: float, hit_data: Dictionary) -> void:
-	if amount <= 0.0 or is_defeated or is_dizzy:
-		return
+func _get_block_cost(base_cost: float) -> float:
+	# An explicitly free block stays free; equipment cannot make a paid block free.
+	if base_cost <= 0.0:
+		return 0.0
+	var shield: CharacterPropDefinition = character.call("get_equipped_prop_definition", "left_hand")
+	return maxf(base_cost - (shield.block_value if shield != null else 0.0), 1.0)
 
-	guard = maxf(guard - amount, 0.0)
-	EventBus.combat_damage_applied.emit(character, hit_data)
-	emit_combat_stats_changed()
+
+func _absorb_blocked_hit(health_damage: float, cost: float) -> float:
+	if cost <= 0.0:
+		return 0.0
+	var damage_through := 0.0
+	if _is_player():
+		var paid := minf(stamina, cost)
+		stamina -= paid
+		damage_through = health_damage * (1.0 - paid / cost)
+	else:
+		guard = maxf(guard - cost, 0.0)
 	character.call("play_block_impact")
-
-	if guard <= 0.0:
-		_enter_dizzy()
+	return damage_through
 
 
-func _apply_health_damage(amount: float, hit_data: Dictionary) -> void:
+func _apply_health_damage(amount: float, hit_reaction := true) -> void:
 	if amount <= 0.0 or is_defeated:
 		return
 
 	cancel_dodge()
 	health = maxf(health - amount, 0.0)
-	EventBus.combat_damage_applied.emit(character, hit_data)
-	emit_combat_stats_changed()
 
 	if health <= 0.0 and not is_defeated:
 		is_defeated = true
@@ -429,7 +473,7 @@ func _apply_health_damage(amount: float, hit_data: Dictionary) -> void:
 		character.call("play_death")
 		defeated.emit()
 		EventBus.combat_character_defeated.emit(character)
-	else:
+	elif hit_reaction:
 		character.call("play_hit_react")
 
 
@@ -472,12 +516,43 @@ func _exit_dizzy() -> void:
 
 	is_dizzy = false
 	_dizzy_time_remaining = 0.0
-	guard = maxf(max_guard, 0.0)
-	emit_combat_stats_changed()
+	if _is_enemy():
+		guard = maxf(max_guard, 0.0)
+		emit_combat_stats_changed()
 
 	if character != null:
 		character.call("set_dizzy_animation", false)
 	stagger_finished.emit()
+
+
+func _can_afford_stamina(amount: float) -> bool:
+	return not _is_player() or stamina >= maxf(amount, 0.0)
+
+
+func _spend_stamina(amount: float) -> void:
+	if _is_player() and amount > 0.0:
+		stamina = maxf(stamina - amount, 0.0)
+		emit_combat_stats_changed()
+
+
+func _update_stamina(delta: float) -> void:
+	if not _is_player() or is_defeated:
+		return
+	if stamina >= maxf(max_stamina, 0.0):
+		_stamina_regen_elapsed = 0.0
+		return
+	if is_blocking or _attack_window_pending or is_dodging or stamina_regen_per_second <= 0.0:
+		return
+	_stamina_regen_elapsed += delta
+	# Tolerate floating-point accumulation at exact one-second boundaries.
+	var ticks := floori(_stamina_regen_elapsed + 1e-9)
+	if ticks < 1:
+		return
+	_stamina_regen_elapsed = maxf(_stamina_regen_elapsed - ticks, 0.0)
+	stamina = minf(stamina + ticks * stamina_regen_per_second, maxf(max_stamina, 0.0))
+	if stamina >= maxf(max_stamina, 0.0):
+		_stamina_regen_elapsed = 0.0
+	emit_combat_stats_changed()
 
 
 func _find_weapon_hitbox_shape(node: Node) -> CollisionShape3D:
@@ -513,6 +588,8 @@ func can_start_dodge() -> bool:
 		return false
 	if _attack_window_pending or not character.is_on_floor():
 		return false
+	if not _can_afford_stamina(dodge_stamina_cost):
+		return false
 	return character.can_play_dodge_animation()
 
 
@@ -534,6 +611,7 @@ func start_dodge(direction: DodgeDirection) -> bool:
 		character.stop_dodge_motion_and_visuals()
 		set_blocking(was_blocking)
 		return false
+	_spend_stamina(dodge_stamina_cost)
 	dodge_started.emit(direction)
 	return true
 

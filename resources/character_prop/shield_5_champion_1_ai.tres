@@ -7,6 +7,7 @@
 script = ExtResource("2_q5u82")
 slot = "left_hand"
 display_name = "Shield Champion"
+block_value = 8.0
 prop_scene = ExtResource("1_hu0ti")
 target_bone_name = "mixamorig_LeftHand"
 local_position = Vector3(0, 0, -0.05)

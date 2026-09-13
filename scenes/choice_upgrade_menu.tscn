@@ -207,14 +207,14 @@ custom_minimum_size = Vector2(120, 0)
 mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "Toto au au skiuy gugugwuygrwuegr uwgeuyrgwueygr
-qwe
-qw
-e
-qwe
-qw
-eeee
-qwe"
+text = "Item name"
+autowrap_mode = 2
+
+[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(120, 0)
+mouse_filter = 2
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 
 [node name="Card2" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=2086732520]
@@ -251,18 +251,18 @@ texture = SubResource("AtlasTexture_kcy42")
 stretch_mode = 5
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=2026574797]
-custom_minimum_size = Vector2(0, 120)
+custom_minimum_size = Vector2(120, 0)
 mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "Toto au au ski
-qwe
-qw
-e
-qwe
-qw
-eeee
-qwe"
+text = "Item name"
+autowrap_mode = 2
+
+[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(120, 0)
+mouse_filter = 2
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 
 [node name="Card3" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=787219131]
@@ -303,15 +303,14 @@ custom_minimum_size = Vector2(120, 0)
 mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "Toto au au ski
-qe
-qw
-eq
-we
-qwe
-q
-we
-"
+text = "Item name"
+autowrap_mode = 2
+
+[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(120, 0)
+mouse_filter = 2
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 
 [node name="Button" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1218051280]

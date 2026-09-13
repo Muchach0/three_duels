@@ -509,6 +509,7 @@ func _update_left_attack_hold(delta: float) -> void:
 
     _left_attack_hold_elapsed += delta
     if _left_attack_hold_elapsed >= heavy_attack_hold_time:
+        # Consume the gesture even when stamina or another gate rejects the attack.
         _heavy_attack_fired = true
         attack(Combat_Component.AttackType.HEAVY)
 
@@ -554,10 +555,14 @@ func reset_for_duel() -> void:
         combat_component.reset_for_duel()
 
 
+func get_equipped_prop_definition(slot: String) -> CharacterPropDefinition:
+    return _active_prop_definitions.get(slot) as CharacterPropDefinition
+
+
 func get_equipped_prop_definitions() -> Array[CharacterPropDefinition]:
     var definitions: Array[CharacterPropDefinition] = []
     for slot in ["right_hand", "left_hand", "head"]:
-        var definition := _active_prop_definitions.get(slot) as CharacterPropDefinition
+        var definition := get_equipped_prop_definition(slot)
         if definition != null:
             definitions.append(definition)
 
@@ -956,13 +961,14 @@ func equip_prop(definition: CharacterPropDefinition) -> void:
         push_warning("Cannot equip prop '%s': bone '%s' was not found." % [definition.display_name, definition.target_bone_name])
         return
 
-    unequip_slot(definition.slot)
-    var attachment := _get_or_create_bone_attachment(definition.slot, definition.target_bone_name)
-    var prop_instance := definition.prop_scene.instantiate() as Node3D
-    if prop_instance == null:
+    var prop_instance := definition.prop_scene.instantiate()
+    if not prop_instance is Node3D:
+        prop_instance.free()
         push_warning("Cannot equip prop '%s': prop scene root must be Node3D." % definition.display_name)
         return
 
+    unequip_slot(definition.slot)
+    var attachment := _get_or_create_bone_attachment(definition.slot, definition.target_bone_name)
     attachment.add_child(prop_instance)
     prop_instance.position = definition.local_position
     prop_instance.rotation_degrees = definition.local_rotation_degrees

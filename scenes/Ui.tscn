@@ -159,7 +159,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_cf3ad")
 step = 1.0
 value = 75.0
 
-[node name="EnemyGuardBar" type="ProgressBar" parent="CanvasLayer/PlayerControl/HBoxContainer" unique_id=1843381317]
+[node name="PlayerStaminaBar" type="ProgressBar" parent="CanvasLayer/PlayerControl/HBoxContainer" unique_id=1843381317]
 layout_mode = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_rwbfc")
 step = 1.0
