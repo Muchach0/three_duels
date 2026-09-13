@@ -3,7 +3,26 @@
 [ext_resource type="Theme" uid="uid://c6vho6rwvu82i" path="res://assets/theme_and_fonts/my_theme.tres" id="1_jygd3"]
 [ext_resource type="Texture2D" uid="uid://b05vv7yuo26hy" path="res://assets/icons/1_bit_pack.png" id="2_mvyxn"]
 [ext_resource type="Texture2D" uid="uid://diukg03da6p0k" path="res://assets/icons/icon_items.png" id="4_gdt0p"]
-[ext_resource type="Script" path="res://scenes/choice_upgrade_menu.gd" id="5_choice_menu"]
+[ext_resource type="Script" uid="uid://r72cw4ic4aon" path="res://scenes/choice_upgrade_menu.gd" id="5_choice_menu"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_choices"]
+resource_local_to_scene = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_selected"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.55, 0.22, 0.12, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 0.8, 0.3, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mvyxn"]
 atlas = ExtResource("2_mvyxn")
@@ -127,27 +146,41 @@ color = Color(0.9882353, 0.8980392, 0.67058825, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=939425184]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -576.0
+offset_top = -378.5
+offset_right = 576.0
+offset_bottom = 378.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 100
 theme_override_constants/margin_top = 100
 theme_override_constants/margin_right = 100
 theme_override_constants/margin_bottom = 100
-metadata/_edit_use_anchors_ = true
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1689783379]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=782520263]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1689783379]
 layout_mode = 2
 
-[node name="Card1" type="Button" parent="MarginContainer/HBoxContainer" unique_id=1561499163]
+[node name="Card1" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1561499163]
 custom_minimum_size = Vector2(0, 512)
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("1_jygd3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_selected")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_selected")
+toggle_mode = true
+button_group = SubResource("ButtonGroup_choices")
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Card1" unique_id=1898750716]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1" unique_id=1898750716]
+mouse_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -158,17 +191,20 @@ theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Card1/MarginContainer" unique_id=650747472]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer" unique_id=650747472]
+mouse_filter = 2
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=1413393411]
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=1413393411]
 custom_minimum_size = Vector2(64, 128)
+mouse_filter = 2
 layout_mode = 2
 texture = SubResource("AtlasTexture_gdt0p")
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=1997404966]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=1997404966]
 custom_minimum_size = Vector2(120, 0)
+mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Toto au au skiuy gugugwuygrwuegr uwgeuyrgwueygr
@@ -181,13 +217,18 @@ eeee
 qwe"
 autowrap_mode = 2
 
-[node name="Card2" type="Button" parent="MarginContainer/HBoxContainer" unique_id=2086732520]
+[node name="Card2" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=2086732520]
 custom_minimum_size = Vector2(0, 512)
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("1_jygd3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_selected")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_selected")
+toggle_mode = true
+button_group = SubResource("ButtonGroup_choices")
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Card2" unique_id=246242139]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2" unique_id=246242139]
+mouse_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -198,17 +239,20 @@ theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Card2/MarginContainer" unique_id=276778542]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer" unique_id=276778542]
+mouse_filter = 2
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=1674522631]
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=1674522631]
 custom_minimum_size = Vector2(64, 128)
+mouse_filter = 2
 layout_mode = 2
 texture = SubResource("AtlasTexture_kcy42")
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=2026574797]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=2026574797]
 custom_minimum_size = Vector2(0, 120)
+mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Toto au au ski
@@ -221,13 +265,18 @@ eeee
 qwe"
 autowrap_mode = 2
 
-[node name="Card3" type="Button" parent="MarginContainer/HBoxContainer" unique_id=787219131]
+[node name="Card3" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=787219131]
 custom_minimum_size = Vector2(0, 512)
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("1_jygd3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_selected")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_selected")
+toggle_mode = true
+button_group = SubResource("ButtonGroup_choices")
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/Card3" unique_id=1828532680]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3" unique_id=1828532680]
+mouse_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -238,17 +287,20 @@ theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Card3/MarginContainer" unique_id=719058935]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer" unique_id=719058935]
+mouse_filter = 2
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=1473624123]
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=1473624123]
 custom_minimum_size = Vector2(64, 128)
+mouse_filter = 2
 layout_mode = 2
 texture = SubResource("AtlasTexture_d73ua")
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=1821665101]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=1821665101]
 custom_minimum_size = Vector2(120, 0)
+mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Toto au au ski
@@ -261,3 +313,11 @@ q
 we
 "
 autowrap_mode = 2
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1218051280]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = ExtResource("1_jygd3")
+text = "Validate"
+disabled = true
