@@ -6,10 +6,10 @@
 [resource]
 script = ExtResource("2_8cp58")
 slot = "left_hand"
-display_name = "Shield_2_2"
-block_value = 2.0
+display_name = "Wooden Shield"
 prop_scene = ExtResource("1_nlhej")
 target_bone_name = "mixamorig_LeftHand"
 local_position = Vector3(0, 0, -0.05)
 local_rotation_degrees = Vector3(90, 0, -90)
+block_value = 2.0
 metadata/_custom_type_script = "uid://twfa88qvqiwf"

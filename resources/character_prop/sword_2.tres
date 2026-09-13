@@ -5,8 +5,8 @@
 
 [resource]
 script = ExtResource("1_8e0kc")
-display_name = "sword_2"
-damage_bonus = 5.0
+display_name = "Soldier Sword"
 prop_scene = ExtResource("1_w12ts")
 local_rotation_degrees = Vector3(180, 0, -90)
+damage_bonus = 5.0
 metadata/_custom_type_script = "uid://twfa88qvqiwf"

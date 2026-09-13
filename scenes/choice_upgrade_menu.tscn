@@ -5,8 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://diukg03da6p0k" path="res://assets/icons/icon_items.png" id="4_gdt0p"]
 [ext_resource type="Script" uid="uid://r72cw4ic4aon" path="res://scenes/choice_upgrade_menu.gd" id="5_choice_menu"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_choices"]
-resource_local_to_scene = true
+[sub_resource type="AtlasTexture" id="AtlasTexture_mvyxn"]
+atlas = ExtResource("2_mvyxn")
+region = Rect2(417, 0, 16, 16)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_selected"]
 content_margin_left = 4.0
@@ -24,9 +25,7 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_mvyxn"]
-atlas = ExtResource("2_mvyxn")
-region = Rect2(417, 0, 16, 16)
+[sub_resource type="ButtonGroup" id="ButtonGroup_choices"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gdt0p"]
 atlas = ExtResource("4_gdt0p")
@@ -180,39 +179,37 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_choices")
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1" unique_id=1898750716]
-mouse_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer" unique_id=650747472]
-mouse_filter = 2
 layout_mode = 2
+mouse_filter = 2
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=1413393411]
 custom_minimum_size = Vector2(64, 128)
-mouse_filter = 2
 layout_mode = 2
+mouse_filter = 2
 texture = SubResource("AtlasTexture_gdt0p")
 stretch_mode = 5
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=1997404966]
 custom_minimum_size = Vector2(120, 0)
-mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Item name"
 autowrap_mode = 2
 
-[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer"]
+[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card1/MarginContainer/VBoxContainer" unique_id=513747804]
 custom_minimum_size = Vector2(120, 0)
-mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
@@ -228,39 +225,37 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_choices")
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2" unique_id=246242139]
-mouse_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer" unique_id=276778542]
-mouse_filter = 2
 layout_mode = 2
+mouse_filter = 2
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=1674522631]
 custom_minimum_size = Vector2(64, 128)
-mouse_filter = 2
 layout_mode = 2
+mouse_filter = 2
 texture = SubResource("AtlasTexture_kcy42")
 stretch_mode = 5
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=2026574797]
 custom_minimum_size = Vector2(120, 0)
-mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Item name"
 autowrap_mode = 2
 
-[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer"]
+[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card2/MarginContainer/VBoxContainer" unique_id=852426976]
 custom_minimum_size = Vector2(120, 0)
-mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
@@ -276,39 +271,37 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_choices")
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3" unique_id=1828532680]
-mouse_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer" unique_id=719058935]
-mouse_filter = 2
 layout_mode = 2
+mouse_filter = 2
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=1473624123]
 custom_minimum_size = Vector2(64, 128)
-mouse_filter = 2
 layout_mode = 2
+mouse_filter = 2
 texture = SubResource("AtlasTexture_d73ua")
 stretch_mode = 5
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=1821665101]
 custom_minimum_size = Vector2(120, 0)
-mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Item name"
 autowrap_mode = 2
 
-[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer"]
+[node name="Characteristic" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Card3/MarginContainer/VBoxContainer" unique_id=356864907]
 custom_minimum_size = Vector2(120, 0)
-mouse_filter = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
@@ -318,5 +311,5 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme = ExtResource("1_jygd3")
-text = "Validate"
 disabled = true
+text = "Validate"

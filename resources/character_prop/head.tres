@@ -7,7 +7,7 @@
 script = ExtResource("1_qm0di")
 slot = "head"
 display_name = "Gear"
-armor_value = 1.0
 prop_scene = ExtResource("1_swvmf")
 target_bone_name = "mixamorig_Head"
+armor_value = 1.0
 metadata/_custom_type_script = "uid://twfa88qvqiwf"
