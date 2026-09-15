@@ -16,5 +16,5 @@ should_apply_blocking_bonus = false
 available_model_definitions = Array[ExtResource("2_7sfxy")]([ExtResource("3_bgjjp")])
 available_prop_definitions = Array[ExtResource("4_3qk72")]([ExtResource("5_13pua"), ExtResource("6_7sfxy"), ExtResource("7_bgjjp")])
 enemy_ai_profile = ExtResource("8_13pua")
-enemy_tint_index = 2
+enemy_tint_index = 1
 enemy_prop_slots = Array[String](["right_hand", "left_hand", "head"])
