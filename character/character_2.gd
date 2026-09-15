@@ -29,6 +29,12 @@ enum CharacterMode {
 @export var character_model_yaw_offset := PI
 @export var heavy_attack_hold_time := 0.45
 
+@export_group("Equipment Bonuses")
+## Apply armor_value from the equipped head-slot item to remaining health damage.
+@export var should_apply_armor := true
+## Apply block_value from the equipped left-hand item to stamina/guard block cost.
+@export var should_apply_blocking_bonus := true
+
 @export_group("Dodge")
 @export_range(0.1, 10.0, 0.05) var dodge_distance := 2.5
 @export_range(0.1, 3.0, 0.05) var dodge_duration := 0.7
@@ -179,6 +185,7 @@ var _dodge_motion_distance := 0.0
 var _movement_press_sequence := 0
 var _movement_press_order: Dictionary = {}
 var _dodge_visual := DodgeVisual.new()
+var _footstep_distance := 0.0
 
 
 func _ready() -> void:
@@ -198,6 +205,7 @@ func _ready() -> void:
         apply_tint(_current_tint)
 
     combat_component.setup(self, hurtbox)
+    GameAudio.connect_character(combat_component)
 
     if _is_player():
         _connect_customization_ui()
@@ -259,6 +267,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
     if not combat_component.is_active:
         return
+    var previous_position := global_position
+    var was_grounded := is_on_floor()
     # Decisions precede movement; lifecycle completion follows the last motion step.
     if _is_enemy():
         ai_component.physics_process(delta)
@@ -273,7 +283,29 @@ func _physics_process(delta: float) -> void:
         _physics_process_player(delta)
     else:
         _physics_process_enemy(delta)
+    _update_footstep_audio(previous_position, was_grounded)
     combat_component.physics_process(delta)
+
+
+func _update_footstep_audio(previous_position: Vector3, was_grounded: bool) -> void:
+    if is_defeated() or is_dizzy() or combat_component.is_dodging or not is_on_floor():
+        _footstep_distance = 0.0
+        return
+    var displacement := global_position - previous_position
+    displacement.y = 0.0
+    var distance := displacement.length()
+    # Actual movement avoids steps while pushing into walls; discard teleports.
+    if distance < 0.001 or distance > 1.0:
+        _footstep_distance = 0.0
+        return
+    if not was_grounded:
+        _footstep_distance = 0.0
+        return
+    _footstep_distance += distance
+    var stride := 1.8 if _is_running else 1.35
+    if _footstep_distance >= stride:
+        _footstep_distance = fmod(_footstep_distance, stride)
+        GameAudio.play(GameAudio.Cue.FOOTSTEP, 2.0 if _is_running else 0.0)
 
 
 func _apply_gravity(delta: float) -> void:
@@ -553,6 +585,7 @@ func is_dizzy() -> bool:
 
 
 func reset_for_duel() -> void:
+    _footstep_distance = 0.0
     if combat_component != null:
         combat_component.reset_for_duel()
 

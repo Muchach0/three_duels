@@ -11,6 +11,8 @@
 
 [node name="Soldier" unique_id=295723369 instance=ExtResource("1_wq74q")]
 character_mode = 1
+should_apply_armor = false
+should_apply_blocking_bonus = false
 available_model_definitions = Array[ExtResource("2_47qrf")]([ExtResource("7_owafo")])
 available_prop_definitions = Array[ExtResource("8_7bkd7")]([ExtResource("11_sn7ul"), ExtResource("13_8wgcl"), ExtResource("16_j4mkj")])
 enemy_ai_profile = ExtResource("4_t4n63")

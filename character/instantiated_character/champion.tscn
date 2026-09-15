@@ -11,6 +11,8 @@
 
 [node name="Champion" unique_id=847065117 instance=ExtResource("1_xtgg4")]
 character_mode = 1
+should_apply_armor = false
+should_apply_blocking_bonus = false
 available_model_definitions = Array[ExtResource("2_7sfxy")]([ExtResource("3_bgjjp")])
 available_prop_definitions = Array[ExtResource("4_3qk72")]([ExtResource("5_13pua"), ExtResource("6_7sfxy"), ExtResource("7_bgjjp")])
 enemy_ai_profile = ExtResource("8_13pua")

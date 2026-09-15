@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/combat_feedback/combat_feedback.gd" id="1"]
+
+[node name="CombatFeedback" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Bursts" type="Node3D" parent="."]
+
+[node name="Popups" type="CanvasLayer" parent="."]
+layer = 2

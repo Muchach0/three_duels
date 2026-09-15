@@ -54,6 +54,8 @@ shadow_enabled = true
 [node name="Soldier" parent="." unique_id=1224360906 instance=ExtResource("1_h8avn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
 character_mode = 1
+should_apply_armor = false
+should_apply_blocking_bonus = false
 enemy_ai_profile = ExtResource("3_503t6")
 enemy_model_index = 1
 enemy_tint_index = 3

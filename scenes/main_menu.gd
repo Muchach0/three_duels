@@ -15,6 +15,7 @@ func _ready() -> void:
     if not exit_button.pressed.is_connected(_on_exit_button_pressed):
         exit_button.pressed.connect(_on_exit_button_pressed)
     start_button.grab_focus()
+    GameAudio.connect_buttons(self)
 
 
 func _on_start_button_pressed() -> void:

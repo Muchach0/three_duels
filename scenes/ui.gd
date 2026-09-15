@@ -14,6 +14,7 @@ var _enemy_rows: Dictionary = {}
 
 
 func _ready() -> void:
+    GameAudio.connect_buttons(self)
     for bar in [player_health_bar, player_stamina_bar, enemy_health_bar, enemy_guard_bar]:
         _configure_stat_bar(bar)
     if not EventBus.combat_stats_changed.is_connected(_on_combat_stats_changed):

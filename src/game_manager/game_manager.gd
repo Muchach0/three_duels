@@ -57,6 +57,7 @@ func _ready() -> void:
 
 
 func show_main_menu() -> void:
+    GameAudio.clear_world_audio()
     flow_state = State.MAIN_MENU
     selected_props_by_slot.clear()
     current_duel_index = 0
@@ -70,6 +71,7 @@ func show_main_menu() -> void:
         return
     menu.connect("start_game_requested", _on_start_game_requested)
     menu.connect("exit_requested", _on_exit_requested)
+    GameAudio.play_music(GameAudio.Music.MENU)
 
 
 func start_new_run() -> void:
@@ -92,6 +94,7 @@ func start_duel(duel_index: int) -> void:
         push_warning("Cannot start invalid duel index %d." % duel_index)
         return
 
+    GameAudio.clear_world_audio(flow_state == State.UPGRADE_SELECTION)
     current_duel_index = duel_index
     _cleanup_menu()
     _clear_current_enemy()
@@ -130,6 +133,9 @@ func start_duel(duel_index: int) -> void:
 
     flow_state = State.DUEL
     world_root.process_mode = Node.PROCESS_MODE_INHERIT
+    GameAudio.set_arena_ambience(true)
+    GameAudio.play_music(GameAudio.Music.COMBAT)
+    GameAudio.play_stinger(GameAudio.Cue.DUEL_START)
 
 
 func show_upgrade_selection(defeated_enemy: Node) -> void:
@@ -154,6 +160,7 @@ func show_upgrade_selection(defeated_enemy: Node) -> void:
     _current_reward_props = reward_props.duplicate()
     _clear_current_enemy()
     flow_state = State.UPGRADE_SELECTION
+    GameAudio.set_arena_ambience(false)
     world_root.process_mode = Node.PROCESS_MODE_DISABLED
     var menu := _show_menu(UPGRADE_MENU_SCENE)
     if menu == null:
@@ -177,12 +184,16 @@ func on_upgrade_selected(prop_definition: CharacterPropDefinition) -> void:
     _cleanup_menu()
     current_duel_index += 1
     start_duel(current_duel_index)
+    GameAudio.play(GameAudio.Cue.EQUIP)
 
 
 func show_defeat_menu() -> void:
     if flow_state != State.DUEL_ENDING:
         return
     flow_state = State.DEFEAT
+    GameAudio.stop_music()
+    GameAudio.set_arena_ambience(false)
+    GameAudio.play_stinger(GameAudio.Cue.RUN_DEFEAT)
     _cleanup_menu()
     world_root.process_mode = Node.PROCESS_MODE_DISABLED
     var menu := _show_menu(DEFEAT_MENU_SCENE)
@@ -203,6 +214,9 @@ func show_victory_menu() -> void:
     if flow_state != State.DUEL_ENDING:
         return
     flow_state = State.VICTORY
+    GameAudio.stop_music()
+    GameAudio.set_arena_ambience(false)
+    GameAudio.play_stinger(GameAudio.Cue.RUN_VICTORY)
     _current_reward_props.clear()
     _cleanup_menu()
     world_root.process_mode = Node.PROCESS_MODE_DISABLED
@@ -227,6 +241,8 @@ func _on_character_defeated(character: Node) -> void:
         return
     flow_state = State.DUEL_ENDING
     _player_lost = character == player_instance
+    if not _player_lost and current_duel_index < DUEL_CONFIG.size() - 1:
+        GameAudio.play_stinger(GameAudio.Cue.DUEL_WIN)
     for fighter in [player_instance, enemy_instance]:
         fighter.finish_duel()
     finish_delay.start()
@@ -252,6 +268,7 @@ func _show_menu(menu_scene: PackedScene) -> Control:
         return null
     menu.process_mode = Node.PROCESS_MODE_ALWAYS
     ui_root.add_child(menu)
+    GameAudio.connect_buttons(menu)
     current_menu = menu
     return menu
 
@@ -342,3 +359,7 @@ func _on_main_menu_requested() -> void:
 
 func _quit_application() -> void:
     get_tree().quit()
+
+
+func _exit_tree() -> void:
+    GameAudio.clear_world_audio()

@@ -18,6 +18,8 @@ class_name Combat_Component
 @export_range(0.0, 1000.0, 1.0, "or_greater") var stamina_regen_per_second := 5.0
 
 signal attack_started(attack_type: int)
+## Emitted once at the animation-authored hitbox opening, before contact queries.
+signal attack_swing(attack_type: int)
 signal attack_finished(attack_type: int)
 signal stagger_started
 signal stagger_finished
@@ -62,6 +64,7 @@ var _hit_targets_this_swing: Dictionary = {}
 var _weapon_hitbox_active := false
 var _attack_window_pending := false
 var _attack_animation_started := false
+var _swing_emitted := false
 var _active_attack_type := AttackType.LIGHT
 var _dizzy_time_remaining := 0.0
 
@@ -168,7 +171,7 @@ func receive_hit(attacker: Node, hit_data: Dictionary) -> void:
 		health_damage = _absorb_blocked_hit(health_damage, cost)
 		defense_broken = cost > 0.0 and get_defense() <= 0.0
 	var helmet: CharacterPropDefinition = character.call("get_equipped_prop_definition", "head")
-	if helmet != null:
+	if helmet != null and character.should_apply_armor:
 		health_damage = maxf(health_damage - helmet.armor_value, 0.0)
 	_apply_health_damage(health_damage, not blocked)
 	if defense_broken:
@@ -225,8 +228,12 @@ func set_weapon_hitbox_active(active: bool) -> void:
 
 
 func open_hitbox() -> void:
-	if _attack_window_pending:
-		set_weapon_hitbox_active(true)
+	if not _attack_window_pending or not is_active or is_defeated or is_dizzy or is_dodging:
+		return
+	if not _swing_emitted:
+		_swing_emitted = true
+		attack_swing.emit(_active_attack_type)
+	set_weapon_hitbox_active(true)
 
 
 func close_hitbox() -> void:
@@ -311,6 +318,7 @@ func _setup_weapon_hitbox() -> void:
 
 
 func _start_attack_window(attack_type: int) -> void:
+	_swing_emitted = false
 	_attack_sequence_id += 1
 	_active_attack_id = _attack_sequence_id
 	_active_attack_type = attack_type
@@ -463,7 +471,7 @@ func _get_block_cost(base_cost: float) -> float:
 	if base_cost <= 0.0:
 		return 0.0
 	var shield: CharacterPropDefinition = character.call("get_equipped_prop_definition", "left_hand")
-	return maxf(base_cost - (shield.block_value if shield != null else 0.0), 1.0)
+	return maxf(base_cost - (shield.block_value if shield != null and character.should_apply_blocking_bonus else 0.0), 1.0)
 
 
 func _absorb_blocked_hit(health_damage: float, cost: float) -> float:
@@ -565,7 +573,8 @@ func _update_stamina(delta: float) -> void:
 	if stamina >= maxf(max_stamina, 0.0):
 		_stamina_regen_elapsed = 0.0
 		return
-	if is_blocking or _attack_window_pending or is_dodging or stamina_regen_per_second <= 0.0:
+	var is_heavy_attacking := _attack_window_pending and _active_attack_type == AttackType.HEAVY
+	if is_blocking or is_heavy_attacking or is_dodging or stamina_regen_per_second <= 0.0:
 		return
 	_stamina_regen_elapsed += delta
 	# Tolerate floating-point accumulation at exact one-second boundaries.

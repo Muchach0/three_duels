@@ -8,5 +8,5 @@ script = ExtResource("2_ecshn")
 display_name = "Guardian Sword"
 prop_scene = ExtResource("1_65sj6")
 local_rotation_degrees = Vector3(180, 0, -90)
-damage_bonus = 8.0
+damage_bonus = 10.0
 metadata/_custom_type_script = "uid://twfa88qvqiwf"

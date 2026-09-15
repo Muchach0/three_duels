@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/combat_feedback/impact_burst.gd" id="1"]
+
+[sub_resource type="StandardMaterial3D" id="Material"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 0.86, 0.12, 1)
+
+[sub_resource type="PrismMesh" id="Spark"]
+material = SubResource("Material")
+size = Vector3(0.02, 0.065, 0.015)
+
+[sub_resource type="Curve" id="Shrink"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="BlockBurst" type="CPUParticles3D"]
+cast_shadow = 0
+emitting = false
+amount = 7
+lifetime = 0.24
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+mesh = SubResource("Spark")
+direction = Vector3(0, 1, 0)
+spread = 65.0
+gravity = Vector3(0, -3, 0)
+initial_velocity_min = 0.9
+initial_velocity_max = 1.5
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+scale_amount_min = 0.7
+scale_amount_max = 1.2
+scale_amount_curve = SubResource("Shrink")
+script = ExtResource("1")

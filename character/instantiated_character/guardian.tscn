@@ -11,6 +11,8 @@
 
 [node name="Guardian" unique_id=1883651972 instance=ExtResource("1_pxdjx")]
 character_mode = 1
+should_apply_armor = false
+should_apply_blocking_bonus = false
 available_model_definitions = Array[ExtResource("2_trups")]([ExtResource("3_80ye1")])
 available_prop_definitions = Array[ExtResource("4_hr07v")]([ExtResource("5_6q6xh"), ExtResource("6_trups"), ExtResource("7_6q6xh")])
 enemy_ai_profile = ExtResource("8_trups")

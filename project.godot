@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 EventBus="*uid://c0043ewamkt4u"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+GameAudio="*res://src/autoloads/game_audio.gd"
 
 [display]
 
